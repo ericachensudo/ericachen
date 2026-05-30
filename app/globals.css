@@ -11,3 +11,15 @@
     scrollbar-width: none;
   }
 }
+
+/* TikTok marquee carousel */
+@keyframes tt-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.tt-track {
+  animation: tt-marquee 32s linear infinite;
+}
+.tt-track:hover {
+  animation-play-state: paused;
+}

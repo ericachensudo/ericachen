@@ -1,7 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import dynamic from 'next/dynamic';
+
+// Load the map client-side only (Google Maps requires browser APIs)
+const CityMap = dynamic(() => import('./components/CityMap'), { ssr: false });
 
 // ─── ANIMATION SYSTEM ────────────────────────────────────────────────────────
 // Apple uses a very particular cubic-bezier: fast start, smooth deceleration.
@@ -42,8 +46,123 @@ function HeroReveal({ children, className = '' }) {
 // Shared container
 const container = 'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10';
 
+// ─── PLACES MAP ──────────────────────────────────────────────────────────────
+const MAP_TABS = [
+  { id: 'nyc',    emoji: '🗽', name: 'NYC',         mid: '1dbvFRxSDqDevDRlGx3rxi40wL7dvA84' },
+  { id: 'pr',     emoji: '🌴', name: 'Puerto Rico', mid: '1icBup8BL9rA6TERHw3p8FHX5WDrMOrM' },
+  { id: 'hawaii', emoji: '🌺', name: 'Hawaii',      mid: '1hJvs6LUrHri7-1qlNNZOsdKokraoI8w' },
+];
+
+function PlacesMap() {
+  const [active, setActive] = useState('nyc');
+  const tab = MAP_TABS.find((t) => t.id === active);
+  const activeIdx = MAP_TABS.findIndex((t) => t.id === active);
+
+  return (
+    <div className="bg-white rounded-2xl border border-rose-100 shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="px-4 sm:px-6 pt-5 pb-2 flex items-center justify-between">
+        <div>
+          <h3 className="font-semibold text-rose-800 text-sm sm:text-base">My places 📍</h3>
+          <p className="text-rose-400 text-xs mt-0.5">Spots I keep coming back to</p>
+        </div>
+        <a
+          href={`https://www.google.com/maps/d/viewer?mid=${tab.mid}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-rose-400 text-xs hover:text-rose-600 transition-colors"
+        >
+          Open →
+        </a>
+      </div>
+
+      {/* Timeline pin selector */}
+      <div className="px-6 sm:px-12 pt-4 pb-6">
+        <div className="relative flex items-start justify-between">
+
+          {/* Dashed route line */}
+          <div className="absolute top-5 left-0 right-0 flex items-center">
+            <div className="w-full border-t-2 border-dashed border-rose-200" />
+          </div>
+
+          {/* Progress fill up to active pin */}
+          <div
+            className="absolute top-5 left-0 h-0.5 bg-rose-400 transition-all duration-500"
+            style={{ width: `${(activeIdx / (MAP_TABS.length - 1)) * 100}%` }}
+          />
+
+          {MAP_TABS.map((t, i) => {
+            const isActive = t.id === active;
+            const isPast   = i < activeIdx;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setActive(t.id)}
+                className="relative z-10 flex flex-col items-center gap-2 group"
+              >
+                {/* Emoji floats above the pin */}
+                <motion.span
+                  animate={{ scale: isActive ? 1.2 : 1, y: isActive ? -2 : 0 }}
+                  transition={{ duration: 0.3, ease: EASE }}
+                  className="text-xl leading-none"
+                >
+                  {t.emoji}
+                </motion.span>
+
+                {/* Pin dot */}
+                <div className="relative">
+                  <motion.div
+                    animate={{
+                      scale: isActive ? 1.35 : 1,
+                      backgroundColor: isActive || isPast ? '#f43f5e' : '#fff',
+                      borderColor: isActive || isPast ? '#f43f5e' : '#fecdd3',
+                    }}
+                    transition={{ duration: 0.3 }}
+                    className="w-4 h-4 rounded-full border-2 flex items-center justify-center"
+                  />
+                  {isActive && (
+                    <span className="absolute inset-0 rounded-full bg-rose-400 opacity-40 animate-ping" />
+                  )}
+                </div>
+
+                {/* City name */}
+                <span className={`text-xs font-medium transition-colors duration-200 ${
+                  isActive ? 'text-rose-600' : 'text-rose-300 group-hover:text-rose-400'
+                }`}>
+                  {t.name}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Map iframe */}
+      <div className="px-4 sm:px-6 pb-5">
+        <AnimatePresence mode="wait">
+          <motion.iframe
+            key={tab.mid}
+            src={`https://www.google.com/maps/d/embed?mid=${tab.mid}&ehbc=2E312F`}
+            className="w-full rounded-2xl border border-rose-100"
+            style={{ height: 'clamp(300px, 45vw, 480px)' }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title={tab.name}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.35, ease: EASE }}
+          />
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
 // ─── FIRST SPACE ─── home & heart ──────────────────────────────────────────
 function FirstSpace() {
+
   return (
     <div>
       {/* Hero */}
@@ -58,25 +177,31 @@ function FirstSpace() {
                 Hi, I'm Erica 👋
               </h2>
               <p className="text-rose-700 leading-relaxed text-sm sm:text-base">
-                [A warm, personal intro — who you are when you're off the clock.
-                What makes you, you. Two or three sentences that feel like home.]
+                Welcome to my little corner of the internet. I'm playing around
+                with the idea of first space, second space, and third space online
+                and figuring out what it means to share this part of my life with
+                the world.
               </p>
             </div>
           </div>
         </div>
       </HeroReveal>
 
-      {/* Cards — cascade in with 80 ms between each */}
+      {/* Info cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-5">
         {[
           {
             title: 'Things I love ❤️',
             body: (
               <ul className="space-y-2 text-sm text-rose-700">
-                {[1, 2, 3, 4].map((i) => (
+                {[
+                  '🍽️ Never eating at the same restaurant twice',
+                  '📷 Polaroids & candid film photography',
+                  '✈️ Solo travel & city-hopping',
+                  '🀄 Hosting Mahjong & Catan nights',
+                ].map((item, i) => (
                   <li key={i} className="flex items-center gap-2">
-                    <span className="text-rose-300">•</span>
-                    [Hobby or interest {i}]
+                    <span>{item}</span>
                   </li>
                 ))}
               </ul>
@@ -86,10 +211,12 @@ function FirstSpace() {
             title: 'Home base 🏡',
             body: (
               <>
-                <p className="text-rose-500 text-xs mb-2">[City, State]</p>
+                <p className="text-rose-500 text-xs mb-2">New York · Seattle · San Francisco</p>
                 <p className="text-rose-700 text-sm leading-relaxed">
-                  [A little something about where you're from, where you live,
-                  or what home means to you.]
+                  I've spent at least a year in Seattle, San Francisco, and New York
+                  and I've taken a piece of each city with me everywhere I go. There's
+                  something special about how a place can shape you, change you, and
+                  help you grow into who you're becoming. It all started in Queens.
                 </p>
               </>
             ),
@@ -98,8 +225,8 @@ function FirstSpace() {
             title: 'Right now 🌱',
             body: (
               <p className="text-rose-700 text-sm leading-relaxed">
-                [What you're into lately — a book, a project, a feeling, a
-                season of life. Keep it fresh and you.]
+                Growing my Polaroid collection, planning my next solo trip,
+                and always scouting the next restaurant nobody's heard of yet.
               </p>
             ),
             xlOnly: true,
@@ -107,41 +234,16 @@ function FirstSpace() {
         ].map((card, i) => (
           <Reveal key={i} delay={i * 0.08} className={card.xlOnly ? 'hidden xl:block' : ''}>
             <div className="h-full bg-white rounded-2xl p-4 sm:p-6 border border-rose-100 shadow-sm">
-              <h3 className="font-semibold text-rose-800 mb-3 text-sm sm:text-base">
-                {card.title}
-              </h3>
+              <h3 className="font-semibold text-rose-800 mb-3 text-sm sm:text-base">{card.title}</h3>
               {card.body}
             </div>
           </Reveal>
         ))}
       </div>
 
-      {/* Photos — cascade grid */}
+      {/* ── My places map ── */}
       <Reveal>
-        <div className="bg-rose-50 rounded-2xl p-4 sm:p-6 border border-rose-100">
-          <h3 className="font-semibold text-rose-800 mb-4 text-sm sm:text-base">
-            A few of my favorite things 📸
-          </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.92 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.06, ease: EASE }}
-                className={`aspect-square rounded-xl bg-rose-100 flex flex-col items-center justify-center text-rose-300 text-xs gap-1
-                  ${i > 2 ? 'hidden sm:flex' : ''}
-                  ${i > 4 ? 'hidden xl:flex' : ''}
-                  ${i === 4 ? 'hidden lg:flex' : ''}
-                `}
-              >
-                <span className="text-xl sm:text-2xl">🌸</span>
-                <span>Photo {i}</span>
-              </motion.div>
-            ))}
-          </div>
-        </div>
+        <PlacesMap />
       </Reveal>
     </div>
   );
@@ -153,42 +255,60 @@ function FirstSpace() {
 // import from your CMS/database once it's set up.
 const EXPERIENCE = [
   {
-    title: '[Job Title]',
-    company: '[Company Name]',
-    location: '[City, State]',
-    period: '[Year – Present]',
-    desc: '[What you did, built, or are most proud of. Two or three sentences that capture the impact, not just the tasks.]',
-    photo: null, // e.g. '/images/company-a.jpg' or a CDN URL
-    accent: '#fef3c7', // placeholder tint used until a real photo is added
+    title: 'Technical Program Manager II',
+    company: 'Microsoft',
+    location: 'Redmond, WA · Azure Core – Compute Control Plane',
+    period: 'Nov 2024 – Present',
+    desc: 'Owns Azure VM provisioning quality at 135M-user scale, delivering 99.99% Linux success rates and a 50% boot-time reduction by driving cross-functional test strategy and automating incident-response pipelines across Networking, Storage, and Compute.',
+    photo: null,
+    accent: '#fef3c7',
   },
   {
-    title: '[Previous Role]',
-    company: '[Company Name]',
-    location: '[City, State]',
-    period: '[Year – Year]',
-    desc: '[What you did, built, or are most proud of. Two or three sentences that capture the impact, not just the tasks.]',
+    title: 'Product Manager',
+    company: 'Microsoft',
+    location: 'Redmond, WA · Azure Core – Customer Supportability',
+    period: 'May 2024 – Aug 2024',
+    desc: 'Defined product requirements and QA strategy for a quality tooling platform serving 15,000+ Azure Core stakeholders, designing a three-phase iterative feedback system that translated user pain points directly into test prioritization.',
     photo: null,
     accent: '#fde68a',
   },
   {
-    title: '[Earlier Role]',
-    company: '[Company Name]',
-    location: '[City, State]',
-    period: '[Year – Year]',
-    desc: '[What you did, built, or are most proud of. Two or three sentences that capture the impact, not just the tasks.]',
+    title: 'Software Engineering Intern',
+    company: 'Salesforce',
+    location: 'San Francisco, CA · Tableau Dashboard AI Team',
+    period: 'May 2023 – Aug 2023',
+    desc: 'Cut Tableau API latency by 50% (3s → 1.5s) for 150,000+ customers by applying Chain-of-Thought prompt engineering to resolve performance regressions, then shipped a Connect API integration with end-to-end cross-functional test coverage.',
     photo: null,
     accent: '#fcd34d',
+  },
+  {
+    title: 'Software Engineering Intern',
+    company: 'Capital One',
+    location: 'McLean, VA · Auto Loan Team',
+    period: 'Jun 2022 – Aug 2022',
+    desc: 'Rebuilt the auto loan reporting pipeline with FastAPI, cutting generation time from hours to seconds and saving 8 to 12 agent labor hours per cycle, then shipped a full-stack React analytics dashboard to surface real-time data quality signals.',
+    photo: null,
+    accent: '#fed7aa',
+  },
+  {
+    title: 'Technical Product Manager',
+    company: 'OroXYZ',
+    location: 'New York, NY · Pre-Seed Startup @ Columbia Business School',
+    period: 'Jan 2023 – May 2023',
+    desc: 'Drove product roadmap and cross-functional execution for a blockchain-and-Stripe-integrated platform, from UI feature prioritization through authoring technical documentation that enabled partner onboarding during early user trials.',
+    photo: null,
+    accent: '#fef9c3',
   },
 ];
 
 const EDUCATION = [
   {
-    degree: '[Degree · e.g. B.S. Computer Science]',
-    school: '[University Name]',
-    period: '[Year – Year]',
-    note: '[Honors, relevant coursework, clubs, or anything worth calling out.]',
+    degree: 'B.A. Computer Science & Statistics',
+    school: 'Columbia University, Barnard College',
+    period: 'Sept 2020 – May 2024',
+    note: '3.9 GPA · McDonald\'s Multi-Year Academic Scholarship · Election Day translator in Mandarin (native) and Spanish.',
     photo: null,
-    accent: '#fed7aa',
+    accent: '#fef3c7',
   },
 ];
 
@@ -314,8 +434,11 @@ function SecondSpace() {
                   What I do
                 </h2>
                 <p className="text-amber-700 leading-relaxed text-sm sm:text-base">
-                  [A short professional bio — your current role, what you're
-                  focused on, and what you bring. Keep it human, not corporate.]
+                  TPM II at Microsoft Azure, where I keep cloud infrastructure
+                  reliable for 135M weekly users. Built on a software engineering
+                  foundation at Salesforce and Capital One, and a 3.9 GPA
+                  CS&nbsp;+&nbsp;Statistics degree from Columbia Barnard.
+                  I believe the best PMs never stop reading the code.
                 </p>
               </div>
             </div>
@@ -373,6 +496,59 @@ function SecondSpace() {
 }
 
 // ─── THIRD SPACE HELPERS ────────────────────────────────────────────────────
+
+// ── TikTok video carousel ─────────────────────────────────────────────────────
+// Uses TikTok's public embed player — no API key required.
+const FEATURED_VIDEOS = [
+  '7640241221117562125',
+  '7604124661743488270',
+  '7610547152384822542',
+  '7602792356059925774',
+  '7492456252912569643',
+  '7603211623867747598',
+  '7617511729555098893',
+];
+
+// Infinite scrolling marquee of TikTok embeds.
+// Duplicates the list so the loop is seamless.
+// Hover pauses the scroll so visitors can interact with a video.
+function TikTokCarousel({ videoIds = FEATURED_VIDEOS }) {
+  // Duplicate for seamless infinite loop
+  const track = [...videoIds, ...videoIds];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.55, ease: EASE }}
+      className="overflow-hidden w-full"
+    >
+      <div className="tt-track flex gap-4" style={{ width: `calc(${track.length} * (220px + 16px))` }}>
+        {track.map((id, i) => (
+          <a
+            key={`${id}-${i}`}
+            href={`https://www.tiktok.com/@airwrecah/video/${id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-shrink-0 rounded-2xl overflow-hidden border border-violet-100 shadow-md block"
+            style={{ width: 220 }}
+            onClick={(e) => e.preventDefault()} // let iframe handle interaction
+          >
+            <iframe
+              src={`https://www.tiktok.com/embed/v2/${id}`}
+              style={{ width: 220, height: 390, display: 'block' }}
+              allow="encrypted-media; picture-in-picture"
+              allowFullScreen
+              frameBorder="0"
+              title={`TikTok ${i % videoIds.length + 1}`}
+            />
+          </a>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
 
 // Skeleton shimmer shown while fetching
 function Skeleton({ className = '' }) {
@@ -479,41 +655,20 @@ function NotConnected({ platform, connectPath }) {
 
 // ─── THIRD SPACE ─── online & out there ────────────────────────────────────
 function ThirdSpace() {
-  const [platform, setPlatform] = useState('tiktok'); // 'tiktok' | 'instagram' | 'both'
   const [igData, setIgData] = useState(null);
-  const [ttData, setTtData] = useState(null);
   const [igError, setIgError] = useState(null);
-  const [ttError, setTtError] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    Promise.all([
-      fetch('/api/instagram').then((r) => r.json()).catch(() => ({ error: 'fetch failed' })),
-      fetch('/api/tiktok').then((r) => r.json()).catch(() => ({ error: 'fetch failed' })),
-    ]).then(([ig, tt]) => {
-      if (ig.error) setIgError(ig.error); else setIgData(ig.media ?? []);
-      if (tt.error) setTtError(tt.error); else setTtData(tt.videos ?? []);
-      setLoading(false);
-    });
+    fetch('/api/instagram')
+      .then((r) => r.json())
+      .catch(() => ({ error: 'fetch failed' }))
+      .then((ig) => {
+        if (ig.error) setIgError(ig.error);
+        else setIgData(ig.media ?? []);
+        setLoading(false);
+      });
   }, []);
-
-  const showTt = platform === 'tiktok' || platform === 'both';
-  const showIg = platform === 'instagram' || platform === 'both';
-
-  const platformBtn = (id, label) => (
-    <button
-      key={id}
-      onClick={() => setPlatform(id)}
-      className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${
-        platform === id
-          ? 'bg-violet-500 text-white'
-          : 'text-violet-500 hover:bg-violet-50 border border-violet-200'
-      }`}
-    >
-      {label}
-    </button>
-  );
 
   return (
     <div>
@@ -526,94 +681,85 @@ function ThirdSpace() {
             </div>
             <div className="flex-1 min-w-0">
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-violet-900 mb-2">
-                Online & out there
+                somewhere on the internet ✶
               </h2>
-              <p className="text-violet-700 leading-relaxed text-sm sm:text-base mb-4">
-                [The story of your online presence — what you make, who it's
-                for, why you started, and what it means to you.]
+              <p className="text-violet-700 leading-relaxed text-sm sm:text-base">
+                One of my first videos was a high school welcome video I
+                produced for the class of 2020. Something about it stuck.
+                <br /><br />
+                Your first space is home. Your second space is work. Your
+                third space is where you go to just exist. For me that's here.
+                The internet is my third space and I'm still figuring out
+                what that means.
               </p>
-              {/* Platform switcher */}
-              <div className="flex gap-2 flex-wrap">
-                {platformBtn('tiktok', '🎵 TikTok')}
-                {platformBtn('instagram', '📸 Instagram')}
-                {platformBtn('both', '✨ Both')}
-              </div>
             </div>
           </div>
         </div>
       </HeroReveal>
 
-      {/* ── TikTok feed ── */}
-      {showTt && (
-        <Reveal className="mb-5">
-          <div className="bg-white rounded-2xl p-4 sm:p-6 border border-violet-100 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-violet-800 text-sm sm:text-base">🎵 TikTok</h3>
-              <a
-                href="https://tiktok.com/@yourusername"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-violet-400 text-xs hover:text-violet-600 transition-colors"
-              >
-                View profile →
-              </a>
-            </div>
-
-            {loading ? (
-              /* Skeleton grid — portrait ratio for TikTok */
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <Skeleton key={i} className="aspect-[9/16]" />
-                ))}
-              </div>
-            ) : ttError ? (
-              <NotConnected platform="tiktok" connectPath="/api/tiktok/connect" />
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                {ttData.map((video, i) => (
-                  <TtTile key={video.id} video={video} index={i} />
-                ))}
-              </div>
-            )}
+      {/* ── TikTok ── */}
+      <Reveal className="mb-5">
+        <div className="bg-white rounded-2xl p-4 sm:p-6 border border-violet-100 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-violet-800 text-sm sm:text-base">🎵 TikTok</h3>
+            <a
+              href="https://tiktok.com/@airwrecah"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-violet-400 text-xs hover:text-violet-600 transition-colors"
+            >
+              @airwrecah →
+            </a>
           </div>
-        </Reveal>
-      )}
+          <TikTokCarousel />
+        </div>
+      </Reveal>
 
-      {/* ── Instagram feed ── */}
-      {showIg && (
-        <Reveal>
-          <div className="bg-white rounded-2xl p-4 sm:p-6 border border-violet-100 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-violet-800 text-sm sm:text-base">📸 Instagram</h3>
-              <a
-                href="https://instagram.com/yourusername"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-violet-400 text-xs hover:text-violet-600 transition-colors"
-              >
-                View profile →
-              </a>
-            </div>
-
-            {loading ? (
-              /* Skeleton grid — square ratio for Instagram */
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <Skeleton key={i} className="aspect-square" />
-                ))}
-              </div>
-            ) : igError ? (
-              <NotConnected platform="instagram" />
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                {igData.map((item, i) => (
-                  <IgTile key={item.id} item={item} index={i} />
-                ))}
-              </div>
-            )}
+      {/* ── Instagram ── */}
+      <Reveal>
+        <div className="bg-white rounded-2xl p-4 sm:p-6 border border-violet-100 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-violet-800 text-sm sm:text-base">📸 Instagram</h3>
+            <a
+              href="https://instagram.com/airwrecah"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-violet-400 text-xs hover:text-violet-600 transition-colors"
+            >
+              @airwrecah →
+            </a>
           </div>
-        </Reveal>
-      )}
+
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} className="aspect-square" />
+              ))}
+            </div>
+          ) : igError ? (
+            <a
+              href="https://instagram.com/airwrecah"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center justify-center py-12 gap-4 group"
+            >
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-400 via-pink-400 to-amber-400 flex items-center justify-center text-white text-2xl shadow-md group-hover:scale-105 transition-transform duration-300">
+                📸
+              </div>
+              <div className="text-center">
+                <p className="text-violet-800 font-medium text-sm">@airwrecah</p>
+                <p className="text-violet-400 text-xs mt-0.5">View on Instagram →</p>
+              </div>
+            </a>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {igData.map((item, i) => (
+                <IgTile key={item.id} item={item} index={i} />
+              ))}
+            </div>
+          )}
+        </div>
+      </Reveal>
     </div>
   );
 }

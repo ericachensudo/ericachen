@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Saved Places</name>
+    <Placemark>
+      <name>Golmok Market Bar</name>
+      <description>706 E Pike St, Seattle, WA 98122, United States</description>
+      <Point>
+        <coordinates>-122.3231104,47.614227,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>QUANJUDE</name>
+      <description>China, Beijing, Dongcheng, Wangfujing, Wangfujing Ave, 255号 邮政编码: 100006</description>
+      <Point>
+        <coordinates>116.410431,39.914206,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Schneider's Market</name>
+      <description>869 US-11, Kirkwood, NY 13795, United States</description>
+      <Point>
+        <coordinates>-75.823431,42.0927372,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Xisan de Classic</name>
+      <description>151 Montague St, Brooklyn, NY 11201, United States</description>
+      <Point>
+        <coordinates>-73.9932604,40.6947292,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Sol Food</name>
+      <description>903 Lincoln Ave, San Rafael, CA 94901, United States</description>
+      <Point>
+        <coordinates>-122.524281,37.9719041,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Original Joe's</name>
+      <description>601 Union St, San Francisco, CA 94133, United States</description>
+      <Point>
+        <coordinates>-122.4093139,37.8001849,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Artistic Nail Care</name>
+      <description>902 Irving St, San Francisco, CA 94122, United States</description>
+      <Point>
+        <coordinates>-122.4676276,37.7641076,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Regina European Skin Care</name>
+      <description>500 Sutter St Suite #703, San Francisco, CA 94102, United States</description>
+      <Point>
+        <coordinates>-122.40896,37.7894296,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>photodom. NYC</name>
+      <description>1717 Broadway #3, Brooklyn, NY 11207, United States</description>
+      <Point>
+        <coordinates>-73.9112121,40.6834619,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Tantalus Lookout - Puu Ualakaa State Park</name>
+      <description>Nutridge St, Honolulu, HI 96822, United States</description>
+      <Point>
+        <coordinates>-157.8228472,21.3134333,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Fujian Yongtai Winery</name>
+      <description>VW9P+HX9, Yangmei Rd, Yongtai County, Fuzhou, Fujian, China, 350799</description>
+      <Point>
+        <coordinates>118.9374937,25.8689179,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>North Qing Academy</name>
+      <description>China, 6, Taijiang District, Shuguang Rd, 6-4号CN 福建省 福州市 邮政编码: 350009</description>
+      <Point>
+        <coordinates>119.34288,26.05716,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Hengcheng Auto Industry</name>
+      <description>China, 1, Changle District, Datonger Rd, 1-13号CN 福建省 福州市 邮政编码: 350200</description>
+      <Point>
+        <coordinates>119.50401,25.96526,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Lake Erie College of Osteopathic Medicine (LECOM)</name>
+      <description>1858 W Grandview Blvd, Erie, PA 16509, United States</description>
+      <Point>
+        <coordinates>-80.1054775,42.080183,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Restland Memorial Park</name>
+      <description>77 Deforest Ave, East Hanover, NJ 07936, United States</description>
+      <Point>
+        <coordinates>-74.3647089,40.8143727,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Great Sand Dunes National Park and Preserve</name>
+      <description>Colorado, United States</description>
+      <Point>
+        <coordinates>-105.6235976,37.7658491,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Rochester Institute of Technology</name>
+      <description>1 Lomb Memorial Dr, Rochester, NY 14623, United States</description>
+      <Point>
+        <coordinates>-77.6715248,43.0847317,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Anacostia Park</name>
+      <description>1900 Anacostia Dr, Washington, DC 20020, United States</description>
+      <Point>
+        <coordinates>-76.9952962,38.8675262,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>iFLY Indoor Skydiving - King of Prussia</name>
+      <description>290 Goddard Blvd, King of Prussia, PA 19406, United States</description>
+      <Point>
+        <coordinates>-75.400829,40.0929,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>China Cafe</name>
+      <description>410 Lalor St, Trenton, NJ 08611, United States</description>
+      <Point>
+        <coordinates>-74.7526737,40.1992349,0</coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>

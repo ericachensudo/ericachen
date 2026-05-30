@@ -5,6 +5,115 @@ For Vercel, add the same keys under Project → Settings → Environment Variabl
 
 ---
 
+## Google My Maps (live places feed)
+
+The interactive city map pulls your pins directly from a public Google My Maps —
+no code edits needed when you add or update spots.
+
+### Step 1 — Create your My Maps
+1. Go to [mymaps.google.com](https://mymaps.google.com) and sign in with your Google account
+2. Click **Create a new map**
+3. Give it a name (e.g. "Erica's Places")
+
+### Step 2 — Add a layer per city
+Each city on your site = one layer in My Maps.
+
+1. In the left panel, click the pencil icon next to "Untitled layer" and rename it to your city (e.g. `San Francisco`)
+2. Click **Add layer** to add more cities (New York, Seattle, etc.)
+3. Make sure you're on the right layer before dropping pins
+
+### Step 3 — Add pins
+1. Search for a place in the search bar → click **Add to map**
+   *or* click the marker tool (below the search bar) and click anywhere on the map
+2. Name the pin (this appears on your site)
+3. In the description field, optionally add a category tag + your personal note:
+   ```
+   [food] best morning bun in the city
+   [coffee] my WFH spot
+   [outdoors] views of the whole bay
+   [culture] incredible rotating exhibits
+   ```
+   If you skip the tag, the pin shows up as a general marker. Tags must be one of:
+   `food`, `coffee`, `outdoors`, `culture`, `other`
+
+### Step 4 — Make it public
+1. Click **Share** (top of the left panel)
+2. Under "Who has access", click **Change**
+3. Set to **Anyone with the link** → Save
+
+### Step 5 — Copy the Map ID
+Look at the URL — it contains `?mid=` followed by a long string. Copy everything after `mid=` up to the next `&` (or the end of the URL).
+
+For example, in:
+```
+https://www.google.com/maps/d/edit?mid=1aBcDeFgHiJkLmNoPqRsTuVwXyZ&usp=sharing
+```
+The Map ID is `1aBcDeFgHiJkLmNoPqRsTuVwXyZ`.
+
+Paste it into `.env.local`:
+```
+GOOGLE_MYMAPS_ID=1aBcDeFgHiJkLmNoPqRsTuVwXyZ
+```
+
+And add it to Vercel → Project Settings → Environment Variables.
+
+### Updating your places
+- **Add a pin** → shows on site within ~1 hour (API cache refreshes automatically)
+- **Add a new city** → add a new layer with that city's name, drop some pins, done
+- **Edit a note** → update the pin description in My Maps, site refreshes within an hour
+
+---
+
+## Google Maps
+
+The interactive city map in First Space uses the Google Maps JavaScript API.
+
+### Step 1 — Create a Google Cloud project
+1. Go to [console.cloud.google.com](https://console.cloud.google.com) and sign in
+2. Click the project dropdown at the top → **New Project**
+3. Give it a name (e.g. "Erica Site") and click **Create**
+
+### Step 2 — Enable the Maps JavaScript API
+1. In the left sidebar, go to **APIs & Services → Library**
+2. Search for **Maps JavaScript API** and click it
+3. Click **Enable**
+
+### Step 3 — Create an API key
+1. Go to **APIs & Services → Credentials**
+2. Click **Create Credentials → API key**
+3. Copy the key shown — you'll restrict it next
+
+### Step 4 — Restrict the key (important!)
+Click **Edit API key** on the key you just created:
+
+**Application restrictions → HTTP referrers (websites)**
+Add these referrers:
+```
+http://localhost:3000/*
+https://your-site.vercel.app/*
+```
+Replace `your-site.vercel.app` with your actual Vercel domain.
+
+**API restrictions → Restrict key**
+Select **Maps JavaScript API** from the list.
+
+Click **Save**.
+
+### Step 5 — Add the key to your project
+Paste the key into `.env.local`:
+```
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_key_here
+```
+
+### Step 6 — Deploy to Vercel
+In your Vercel dashboard → Project → **Settings → Environment Variables**, add:
+- Key: `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`
+- Value: your API key
+
+> **Note:** Google Maps requires a billing account to be enabled, but usage within the free tier (up to ~$200/month of Maps loads, roughly 28,000 map loads) costs nothing. Just add a credit card to your Google Cloud account to activate the key.
+
+---
+
 ## Instagram
 
 Instagram requires a **Professional account** (Business or Creator) connected to a Facebook Page.

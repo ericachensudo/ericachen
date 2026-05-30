@@ -1,0 +1,38 @@
+{
+  "San Francisco": {
+    "center": { "lat": 37.7749, "lng": -122.4194 },
+    "zoom": 13,
+    "places": [
+      { "id": "sf-1", "name": "Tartine Bakery",      "lat": 37.7612, "lng": -122.4241, "category": "food",     "note": "[Your note — e.g. the morning bun alone is worth the trip]" },
+      { "id": "sf-2", "name": "Sightglass Coffee",   "lat": 37.7785, "lng": -122.4056, "category": "coffee",   "note": "[Your note — e.g. my go-to WFH spot in SoMa]" },
+      { "id": "sf-3", "name": "Dolores Park",        "lat": 37.7596, "lng": -122.4269, "category": "outdoors", "note": "[Your note — e.g. best skyline view on a sunny day]" },
+      { "id": "sf-4", "name": "Lands End Trail",     "lat": 37.7790, "lng": -122.5135, "category": "outdoors", "note": "[Your note — e.g. the bridge views never get old]" },
+      { "id": "sf-5", "name": "SFMOMA",              "lat": 37.7857, "lng": -122.4011, "category": "culture",  "note": "[Your note — e.g. the Rothkos on the top floor]" },
+      { "id": "sf-6", "name": "Dandelion Chocolate", "lat": 37.7624, "lng": -122.4229, "category": "food",     "note": "[Your note — e.g. single-origin hot chocolate]" }
+    ]
+  },
+  "New York": {
+    "center": { "lat": 40.7580, "lng": -73.9855 },
+    "zoom": 12,
+    "places": [
+      { "id": "ny-1", "name": "Café Mogador",       "lat": 40.7233, "lng": -73.9851, "category": "food",     "note": "[Your note — e.g. my Columbia brunch spot for four years]" },
+      { "id": "ny-2", "name": "Joe Coffee",         "lat": 40.7316, "lng": -74.0000, "category": "coffee",   "note": "[Your note — e.g. perfect pour-over every time]" },
+      { "id": "ny-3", "name": "The Ramble",         "lat": 40.7756, "lng": -73.9707, "category": "outdoors", "note": "[Your note — e.g. the secret garden of Central Park]" },
+      { "id": "ny-4", "name": "The Met",            "lat": 40.7794, "lng": -73.9632, "category": "culture",  "note": "[Your note — e.g. could spend weeks in the Egyptian wing]" },
+      { "id": "ny-5", "name": "Superiority Burger", "lat": 40.7272, "lng": -73.9854, "category": "food",     "note": "[Your note — e.g. best veggie burger in the city, full stop]" },
+      { "id": "ny-6", "name": "Riverside Park",     "lat": 40.8014, "lng": -73.9720, "category": "outdoors", "note": "[Your note — e.g. my morning run route from Barnard]" }
+    ]
+  },
+  "Seattle": {
+    "center": { "lat": 47.6062, "lng": -122.3321 },
+    "zoom": 13,
+    "places": [
+      { "id": "sea-1", "name": "Victrola Coffee",    "lat": 47.6139, "lng": -122.3204, "category": "coffee",   "note": "[Your note — e.g. where I go before morning standups]" },
+      { "id": "sea-2", "name": "Pike Place Market",  "lat": 47.6085, "lng": -122.3406, "category": "food",     "note": "[Your note — e.g. the OG farmers market energy]" },
+      { "id": "sea-3", "name": "Volunteer Park",     "lat": 47.6376, "lng": -122.3155, "category": "outdoors", "note": "[Your note — e.g. water tower views over the whole city]" },
+      { "id": "sea-4", "name": "Discovery Park",     "lat": 47.6572, "lng": -122.4046, "category": "outdoors", "note": "[Your note — e.g. the best urban escape near Redmond]" },
+      { "id": "sea-5", "name": "Seattle Art Museum", "lat": 47.6074, "lng": -122.3378, "category": "culture",  "note": "[Your note — e.g. great rotating exhibits]" },
+      { "id": "sea-6", "name": "Lighthouse Coffee",  "lat": 47.6205, "lng": -122.3493, "category": "coffee",   "note": "[Your note — e.g. my weekend slow-morning spot]" }
+    ]
+  }
+}
