@@ -48,9 +48,14 @@ const container = 'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10';
 
 // ─── PLACES MAP ──────────────────────────────────────────────────────────────
 const MAP_TABS = [
-  { id: 'nyc',    emoji: '🗽', name: 'NYC',         mid: '1dbvFRxSDqDevDRlGx3rxi40wL7dvA84' },
-  { id: 'pr',     emoji: '🌴', name: 'Puerto Rico', mid: '1icBup8BL9rA6TERHw3p8FHX5WDrMOrM' },
-  { id: 'hawaii', emoji: '🌺', name: 'Hawaii',      mid: '1hJvs6LUrHri7-1qlNNZOsdKokraoI8w' },
+  { id: 'nyc',       emoji: '🗽', name: 'NYC',         mid: '1dbvFRxSDqDevDRlGx3rxi40wL7dvA84' },
+  { id: 'pr',        emoji: '🌴', name: 'Puerto Rico', mid: '1icBup8BL9rA6TERHw3p8FHX5WDrMOrM' },
+  { id: 'hawaii',    emoji: '🌺', name: 'Hawaii',      mid: '1hJvs6LUrHri7-1qlNNZOsdKokraoI8w' },
+  { id: 'barcelona', emoji: '🇪🇸', name: 'Barcelona', mid: '1lRheNrPqX4CH1rMFg-oLg70v9YUqqEQ' },
+  { id: 'mexico',    emoji: '🇲🇽', name: 'Mexico',    mid: '1ND0Bd8WQvY5byZT4h6e7Mh37PZS_1r4' },
+  { id: 'taiwan',    emoji: '🇹🇼', name: 'Taiwan',    mid: '1OoskUz1mWLTGb8cwTisWWSKAZ_O2R9o' },
+  { id: 'paris',     emoji: '🗼',  name: 'Paris',     mid: '15MiHjNGdIoT94uhCyL92uVWz0HYBYps' },
+  { id: 'amsterdam', emoji: '🌷', name: 'Amsterdam', mid: '1T0tr5uquuFWoNMb86H7KEDwZIDeUuFs' },
 ];
 
 function PlacesMap() {
@@ -76,19 +81,19 @@ function PlacesMap() {
         </a>
       </div>
 
-      {/* Timeline pin selector */}
-      <div className="px-6 sm:px-12 pt-4 pb-6">
-        <div className="relative flex items-start justify-between">
+      {/* Timeline pin selector — horizontally scrollable */}
+      <div className="pt-4 pb-6 overflow-x-auto no-scrollbar">
+        <div className="relative flex items-start px-8 min-w-max gap-10">
 
           {/* Dashed route line */}
-          <div className="absolute top-5 left-0 right-0 flex items-center">
+          <div className="absolute top-5 left-8 right-8 flex items-center">
             <div className="w-full border-t-2 border-dashed border-rose-200" />
           </div>
 
           {/* Progress fill up to active pin */}
           <div
-            className="absolute top-5 left-0 h-0.5 bg-rose-400 transition-all duration-500"
-            style={{ width: `${(activeIdx / (MAP_TABS.length - 1)) * 100}%` }}
+            className="absolute top-5 left-8 h-0.5 bg-rose-400 transition-all duration-500"
+            style={{ width: `calc(${(activeIdx / (MAP_TABS.length - 1)) * 100}% - 2rem)` }}
           />
 
           {MAP_TABS.map((t, i) => {
@@ -98,7 +103,7 @@ function PlacesMap() {
               <button
                 key={t.id}
                 onClick={() => setActive(t.id)}
-                className="relative z-10 flex flex-col items-center gap-2 group"
+                className="relative z-10 flex flex-col items-center gap-2 group flex-shrink-0"
               >
                 {/* Emoji floats above the pin */}
                 <motion.span
