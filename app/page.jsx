@@ -56,6 +56,8 @@ const MAP_TABS = [
   { id: 'taiwan',    emoji: '🇹🇼', name: 'Taiwan',    mid: '1OoskUz1mWLTGb8cwTisWWSKAZ_O2R9o' },
   { id: 'paris',     emoji: '🗼',  name: 'Paris',     mid: '15MiHjNGdIoT94uhCyL92uVWz0HYBYps' },
   { id: 'amsterdam', emoji: '🌷', name: 'Amsterdam', mid: '1T0tr5uquuFWoNMb86H7KEDwZIDeUuFs' },
+  { id: 'vietnam',   emoji: '🇻🇳', name: 'Vietnam',   mid: '17Rj0zq7sUalYA0VHn3frahJceE9FfNQ' },
+  { id: 'london',    emoji: '🎡', name: 'London',    mid: '1LIpFUbZBiUrVSZrg6DI2YRZ_qzMwnHs' },
 ];
 
 function PlacesMap() {
