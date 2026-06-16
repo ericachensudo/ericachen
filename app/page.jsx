@@ -46,32 +46,23 @@ function HeroReveal({ children, className = '' }) {
 // Shared container
 const container = 'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10';
 
-// ─── PLACES MAP ──────────────────────────────────────────────────────────────
-const MAP_TABS = [
-  { id: 'nyc',       emoji: '🗽', name: 'NYC',         mid: '1dbvFRxSDqDevDRlGx3rxi40wL7dvA84' },
-  { id: 'pr',        emoji: '🌴', name: 'Puerto Rico', mid: '1icBup8BL9rA6TERHw3p8FHX5WDrMOrM' },
-  { id: 'hawaii',    emoji: '🌺', name: 'Hawaii',      mid: '1hJvs6LUrHri7-1qlNNZOsdKokraoI8w' },
-  { id: 'barcelona', emoji: '🇪🇸', name: 'Barcelona', mid: '1lRheNrPqX4CH1rMFg-oLg70v9YUqqEQ' },
-  { id: 'mexico',    emoji: '🇲🇽', name: 'Mexico',    mid: '1ND0Bd8WQvY5byZT4h6e7Mh37PZS_1r4' },
-  { id: 'taiwan',    emoji: '🇹🇼', name: 'Taiwan',    mid: '1OoskUz1mWLTGb8cwTisWWSKAZ_O2R9o' },
-  { id: 'paris',     emoji: '🗼',  name: 'Paris',     mid: '15MiHjNGdIoT94uhCyL92uVWz0HYBYps' },
-  { id: 'amsterdam', emoji: '🌷', name: 'Amsterdam', mid: '1T0tr5uquuFWoNMb86H7KEDwZIDeUuFs' },
-  { id: 'vietnam',   emoji: '🇻🇳', name: 'Vietnam',   mid: '17Rj0zq7sUalYA0VHn3frahJceE9FfNQ' },
-  { id: 'london',    emoji: '🎡', name: 'London',    mid: '1LIpFUbZBiUrVSZrg6DI2YRZ_qzMwnHs' },
+// ─── PLACES I'VE LIVED ───────────────────────────────────────────────────────
+const LIVED_PLACES = [
+  { id: 'nyc', emoji: '🗽', name: 'New York', mid: '1dbvFRxSDqDevDRlGx3rxi40wL7dvA84' },
+  { id: 'sf',  emoji: '🌉', name: 'San Francisco', mid: '1FnJeWiPAkBcXeEGrUANqGV6uCVtUBSg' },
+  { id: 'seattle', emoji: '🌲', name: 'Seattle', mid: '1aCerRPp9BXyor-ShUl2p0issDmbt8fQ' },
 ];
 
-function PlacesMap() {
+function HomeMaps() {
   const [active, setActive] = useState('nyc');
-  const tab = MAP_TABS.find((t) => t.id === active);
-  const activeIdx = MAP_TABS.findIndex((t) => t.id === active);
+  const tab = LIVED_PLACES.find((t) => t.id === active);
 
   return (
     <div className="bg-white rounded-2xl border border-rose-100 shadow-sm overflow-hidden">
-      {/* Header */}
-      <div className="px-4 sm:px-6 pt-5 pb-2 flex items-center justify-between">
+      <div className="px-4 sm:px-6 pt-5 pb-3 flex items-center justify-between">
         <div>
-          <h3 className="font-semibold text-rose-800 text-sm sm:text-base">My places 📍</h3>
-          <p className="text-rose-400 text-xs mt-0.5">Spots I keep coming back to</p>
+          <h3 className="font-semibold text-rose-800 text-sm sm:text-base">Places I&apos;ve lived 🏡</h3>
+          <p className="text-rose-400 text-xs mt-0.5">Cities that shaped me</p>
         </div>
         <a
           href={`https://www.google.com/maps/d/viewer?mid=${tab.mid}`}
@@ -83,75 +74,31 @@ function PlacesMap() {
         </a>
       </div>
 
-      {/* Timeline pin selector — horizontally scrollable */}
-      <div className="pt-4 pb-6 overflow-x-auto no-scrollbar">
-        <div className="relative flex items-start px-8 min-w-max gap-10">
-
-          {/* Dashed route line */}
-          <div className="absolute top-5 left-8 right-8 flex items-center">
-            <div className="w-full border-t-2 border-dashed border-rose-200" />
-          </div>
-
-          {/* Progress fill up to active pin */}
-          <div
-            className="absolute top-5 left-8 h-0.5 bg-rose-400 transition-all duration-500"
-            style={{ width: `calc(${(activeIdx / (MAP_TABS.length - 1)) * 100}% - 2rem)` }}
-          />
-
-          {MAP_TABS.map((t, i) => {
-            const isActive = t.id === active;
-            const isPast   = i < activeIdx;
-            return (
-              <button
-                key={t.id}
-                onClick={() => setActive(t.id)}
-                className="relative z-10 flex flex-col items-center gap-2 group flex-shrink-0"
-              >
-                {/* Emoji floats above the pin */}
-                <motion.span
-                  animate={{ scale: isActive ? 1.2 : 1, y: isActive ? -2 : 0 }}
-                  transition={{ duration: 0.3, ease: EASE }}
-                  className="text-xl leading-none"
-                >
-                  {t.emoji}
-                </motion.span>
-
-                {/* Pin dot */}
-                <div className="relative">
-                  <motion.div
-                    animate={{
-                      scale: isActive ? 1.35 : 1,
-                      backgroundColor: isActive || isPast ? '#f43f5e' : '#fff',
-                      borderColor: isActive || isPast ? '#f43f5e' : '#fecdd3',
-                    }}
-                    transition={{ duration: 0.3 }}
-                    className="w-4 h-4 rounded-full border-2 flex items-center justify-center"
-                  />
-                  {isActive && (
-                    <span className="absolute inset-0 rounded-full bg-rose-400 opacity-40 animate-ping" />
-                  )}
-                </div>
-
-                {/* City name */}
-                <span className={`text-xs font-medium transition-colors duration-200 ${
-                  isActive ? 'text-rose-600' : 'text-rose-300 group-hover:text-rose-400'
-                }`}>
-                  {t.name}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+      {/* City selector pills */}
+      <div className="px-4 sm:px-6 pb-3 flex gap-2 flex-wrap">
+        {LIVED_PLACES.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setActive(t.id)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              active === t.id
+                ? 'bg-rose-500 text-white'
+                : 'bg-rose-50 text-rose-500 hover:bg-rose-100'
+            }`}
+          >
+            {t.emoji} {t.name}
+          </button>
+        ))}
       </div>
 
-      {/* Map iframe */}
+      {/* Map */}
       <div className="px-4 sm:px-6 pb-5">
         <AnimatePresence mode="wait">
           <motion.iframe
             key={tab.mid}
             src={`https://www.google.com/maps/d/embed?mid=${tab.mid}&ehbc=2E312F`}
-            className="w-full rounded-2xl border border-rose-100"
-            style={{ height: 'clamp(300px, 45vw, 480px)' }}
+            className="w-full rounded-xl border border-rose-100"
+            style={{ height: 'clamp(280px, 40vw, 400px)' }}
             allowFullScreen
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
@@ -164,6 +111,136 @@ function PlacesMap() {
         </AnimatePresence>
       </div>
     </div>
+  );
+}
+
+// ─── TRAVEL TIMELINE ─────────────────────────────────────────────────────────
+const MAP_TABS = [
+  { id: 'hawaii',    emoji: '🌺', name: 'Hawaii',      year: '2022', mid: '1hJvs6LUrHri7-1qlNNZOsdKokraoI8w' },
+  { id: 'pr',        emoji: '🌴', name: 'Puerto Rico', year: '2024', mid: '1icBup8BL9rA6TERHw3p8FHX5WDrMOrM' },
+  { id: 'london',    emoji: '🎡', name: 'London',      year: '2025', mid: '1LIpFUbZBiUrVSZrg6DI2YRZ_qzMwnHs' },
+  { id: 'amsterdam', emoji: '🌷', name: 'Amsterdam',   year: '2025', mid: '1T0tr5uquuFWoNMb86H7KEDwZIDeUuFs' },
+  { id: 'paris',     emoji: '🗼', name: 'Paris',       year: '2025', mid: '15MiHjNGdIoT94uhCyL92uVWz0HYBYps' },
+  { id: 'barcelona', emoji: '🇪🇸', name: 'Barcelona', year: '2026', mid: '1lRheNrPqX4CH1rMFg-oLg70v9YUqqEQ' },
+  { id: 'mexico',    emoji: '🇲🇽', name: 'Mexico',    year: '2026', mid: '1ND0Bd8WQvY5byZT4h6e7Mh37PZS_1r4' },
+  { id: 'taiwan',    emoji: '🇹🇼', name: 'Taiwan',    year: '2026', mid: '1OoskUz1mWLTGb8cwTisWWSKAZ_O2R9o' },
+  { id: 'vietnam',   emoji: '🇻🇳', name: 'Vietnam',   year: '2026', mid: '17Rj0zq7sUalYA0VHn3frahJceE9FfNQ' },
+];
+
+// Height per collapsed row in the timeline (px)
+const ROW_HEIGHT = 56;
+// Height added when a row is expanded to show the map
+const MAP_HEIGHT = 300;
+
+function PlacesMap() {
+  const [expanded, setExpanded] = useState(null);
+
+  // Total height scales with city count; grows when one is expanded
+  const totalHeight = MAP_TABS.length * ROW_HEIGHT + (expanded ? MAP_HEIGHT : 0);
+
+  // Track which years have already been shown
+  const shownYears = new Set();
+
+  return (
+    <motion.div
+      animate={{ height: totalHeight }}
+      transition={{ duration: 0.45, ease: EASE }}
+      className="bg-white rounded-2xl border border-rose-100 shadow-sm overflow-hidden relative"
+    >
+      {/* Vertical timeline line */}
+      <div className="absolute left-16 sm:left-20 top-0 bottom-0 w-0.5 bg-rose-100" />
+
+      <div className="py-4">
+        {MAP_TABS.map((t, i) => {
+          const isExpanded = expanded === t.id;
+          const showYear = t.year && !shownYears.has(t.year);
+          if (t.year) shownYears.add(t.year);
+
+          return (
+            <div key={t.id}>
+              {/* Row */}
+              <button
+                onClick={() => setExpanded(isExpanded ? null : t.id)}
+                className="relative w-full flex items-center gap-3 px-4 sm:px-6 py-3 hover:bg-rose-50/50 transition-colors text-left"
+              >
+                {/* Year label on the left — only shown once per year */}
+                <span className="w-8 sm:w-10 flex-shrink-0 text-xs font-semibold text-rose-300 text-right tabular-nums">
+                  {showYear ? t.year : ''}
+                </span>
+
+                {/* Pin dot on the line */}
+                <div className="relative z-10 flex-shrink-0 w-5 h-5 rounded-full border-2 border-rose-300 bg-white flex items-center justify-center">
+                  <motion.div
+                    animate={{
+                      scale: isExpanded ? 1 : 0,
+                      backgroundColor: '#f43f5e',
+                    }}
+                    transition={{ duration: 0.2 }}
+                    className="w-2.5 h-2.5 rounded-full"
+                  />
+                </div>
+
+                {/* Emoji */}
+                <span className="text-lg leading-none">{t.emoji}</span>
+
+                {/* Name */}
+                <span className={`text-sm font-medium transition-colors ${
+                  isExpanded ? 'text-rose-700' : 'text-rose-500'
+                }`}>
+                  {t.name}
+                </span>
+
+                {/* Open link + chevron */}
+                <span className="ml-auto flex items-center gap-2">
+                  <a
+                    href={`https://www.google.com/maps/d/viewer?mid=${t.mid}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-rose-300 text-xs hover:text-rose-500 transition-colors hidden sm:inline"
+                  >
+                    Open →
+                  </a>
+                  <motion.svg
+                    animate={{ rotate: isExpanded ? 180 : 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="w-4 h-4 text-rose-300"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </motion.svg>
+                </span>
+              </button>
+
+              {/* Expandable map */}
+              <AnimatePresence>
+                {isExpanded && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: MAP_HEIGHT, opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.4, ease: EASE }}
+                    className="overflow-hidden px-4 sm:px-6 pl-20 sm:pl-24"
+                  >
+                    <iframe
+                      src={`https://www.google.com/maps/d/embed?mid=${t.mid}&ehbc=2E312F`}
+                      className="w-full h-full rounded-xl border border-rose-100"
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title={t.name}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
+      </div>
+    </motion.div>
   );
 }
 
@@ -186,8 +263,7 @@ function FirstSpace() {
               <p className="text-rose-700 leading-relaxed text-sm sm:text-base">
                 Welcome to my little corner of the internet. I'm playing around
                 with the idea of first space, second space, and third space online
-                and figuring out what it means to share this part of my life with
-                the world.
+                and figuring out what it means to share different parts of my life.
               </p>
             </div>
           </div>
@@ -221,9 +297,7 @@ function FirstSpace() {
                 <p className="text-rose-500 text-xs mb-2">New York · Seattle · San Francisco</p>
                 <p className="text-rose-700 text-sm leading-relaxed">
                   I've spent at least a year in Seattle, San Francisco, and New York
-                  and I've taken a piece of each city with me everywhere I go. There's
-                  something special about how a place can shape you, change you, and
-                  help you grow into who you're becoming. It all started in Queens.
+                  and I've taken a piece of each city with me everywhere I go, but it all started in Queens, New York.
                 </p>
               </>
             ),
@@ -248,7 +322,12 @@ function FirstSpace() {
         ))}
       </div>
 
-      {/* ── My places map ── */}
+      {/* ── Places I've lived ── */}
+      <Reveal className="mb-5">
+        <HomeMaps />
+      </Reveal>
+
+      {/* ── Travel timeline ── */}
       <Reveal>
         <PlacesMap />
       </Reveal>
@@ -266,7 +345,6 @@ const EXPERIENCE = [
     company: 'Microsoft',
     location: 'Redmond, WA · Azure Core – Compute Control Plane',
     period: 'Nov 2024 – Present',
-    desc: 'Owns Azure VM provisioning quality at 135M-user scale, delivering 99.99% Linux success rates and a 50% boot-time reduction by driving cross-functional test strategy and automating incident-response pipelines across Networking, Storage, and Compute.',
     photo: null,
     accent: '#fef3c7',
   },
@@ -275,7 +353,6 @@ const EXPERIENCE = [
     company: 'Microsoft',
     location: 'Redmond, WA · Azure Core – Customer Supportability',
     period: 'May 2024 – Aug 2024',
-    desc: 'Defined product requirements and QA strategy for a quality tooling platform serving 15,000+ Azure Core stakeholders, designing a three-phase iterative feedback system that translated user pain points directly into test prioritization.',
     photo: null,
     accent: '#fde68a',
   },
@@ -284,7 +361,6 @@ const EXPERIENCE = [
     company: 'Salesforce',
     location: 'San Francisco, CA · Tableau Dashboard AI Team',
     period: 'May 2023 – Aug 2023',
-    desc: 'Cut Tableau API latency by 50% (3s → 1.5s) for 150,000+ customers by applying Chain-of-Thought prompt engineering to resolve performance regressions, then shipped a Connect API integration with end-to-end cross-functional test coverage.',
     photo: null,
     accent: '#fcd34d',
   },
@@ -293,7 +369,6 @@ const EXPERIENCE = [
     company: 'Capital One',
     location: 'McLean, VA · Auto Loan Team',
     period: 'Jun 2022 – Aug 2022',
-    desc: 'Rebuilt the auto loan reporting pipeline with FastAPI, cutting generation time from hours to seconds and saving 8 to 12 agent labor hours per cycle, then shipped a full-stack React analytics dashboard to surface real-time data quality signals.',
     photo: null,
     accent: '#fed7aa',
   },
@@ -302,7 +377,6 @@ const EXPERIENCE = [
     company: 'OroXYZ',
     location: 'New York, NY · Pre-Seed Startup @ Columbia Business School',
     period: 'Jan 2023 – May 2023',
-    desc: 'Drove product roadmap and cross-functional execution for a blockchain-and-Stripe-integrated platform, from UI feature prioritization through authoring technical documentation that enabled partner onboarding during early user trials.',
     photo: null,
     accent: '#fef9c3',
   },
@@ -398,9 +472,11 @@ function ResumeRow({ item, index, onEnter, onMove, onLeave }) {
             </>
           )}
         </div>
-        <p className="text-amber-700/80 text-sm leading-relaxed">
-          {item.desc ?? item.note}
-        </p>
+        {(item.desc ?? item.note) && (
+          <p className="text-amber-700/80 text-sm leading-relaxed">
+            {item.desc ?? item.note}
+          </p>
+        )}
       </div>
     </motion.div>
   );
@@ -441,9 +517,9 @@ function SecondSpace() {
                   What I do
                 </h2>
                 <p className="text-amber-700 leading-relaxed text-sm sm:text-base">
-                  TPM II at Microsoft Azure, where I keep cloud infrastructure
+                  TPM at Microsoft Azure, where I keep cloud infrastructure
                   reliable for 135M weekly users. Built on a software engineering
-                  foundation at Salesforce and Capital One, and a 3.9 GPA
+                  foundation at Salesforce and Capital One, and a
                   CS&nbsp;+&nbsp;Statistics degree from Columbia Barnard.
                   I believe the best PMs never stop reading the code.
                 </p>
@@ -549,6 +625,81 @@ function TikTokCarousel({ videoIds = FEATURED_VIDEOS }) {
               allowFullScreen
               frameBorder="0"
               title={`TikTok ${i % videoIds.length + 1}`}
+            />
+          </a>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Twitter tweet carousel ────────────────────────────────────────────────────
+// Ordered by engagement (likes + replies), most popular first.
+const TWEET_IDS = [
+  '1935560037717651868',
+  '1892695508726296758',
+  '1898625371098190263',
+  '1941750861266551099',
+  '1899152262251135053',
+  '1896111308950601842',
+  '1894807150087881156',
+  '1915564965978923476',
+  '1893016707599606187',
+  '1897052947735044573',
+  '1896796154966487266',
+  '1895215030804832487',
+  '1894628936547799549',
+  '1894106286184100260',
+  '1893867077326262745',
+  '1893522220494004714',
+  '1938098272385831417',
+  '1904250402654089298',
+  '1902050872072532047',
+  '1899581109589172419',
+  '1896445092959039656',
+];
+
+const TWEET_EMBED_WIDTH = 350;
+const TWEET_EMBED_HEIGHT = 520;
+
+// Infinite scrolling marquee of tweet embeds.
+// Duplicates the list so the loop is seamless.
+// Hover pauses the scroll so visitors can interact with a post.
+function TwitterCarousel({ tweetIds = TWEET_IDS }) {
+  const track = [...tweetIds, ...tweetIds];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.55, ease: EASE }}
+      className="overflow-hidden w-full"
+    >
+      <div
+        className="tw-track flex gap-4"
+        style={{ width: `calc(${track.length} * (${TWEET_EMBED_WIDTH}px + 16px))` }}
+      >
+        {track.map((id, i) => (
+          <a
+            key={`${id}-${i}`}
+            href={`https://x.com/ericaachenn/status/${id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-shrink-0 rounded-2xl overflow-hidden border border-violet-100 shadow-md block"
+            style={{ width: TWEET_EMBED_WIDTH }}
+            onClick={(e) => e.preventDefault()}
+          >
+            <iframe
+              src={`https://platform.twitter.com/embed/Tweet.html?id=${id}&theme=light&dnt=true`}
+              style={{
+                width: TWEET_EMBED_WIDTH,
+                height: TWEET_EMBED_HEIGHT,
+                display: 'block',
+                border: 'none',
+              }}
+              allowFullScreen
+              title={`Tweet ${i % tweetIds.length + 1}`}
             />
           </a>
         ))}
@@ -691,13 +842,7 @@ function ThirdSpace() {
                 somewhere on the internet ✶
               </h2>
               <p className="text-violet-700 leading-relaxed text-sm sm:text-base">
-                One of my first videos was a high school welcome video I
-                produced for the class of 2020. Something about it stuck.
-                <br /><br />
-                Your first space is home. Your second space is work. Your
-                third space is where you go to just exist. For me that's here.
-                The internet is my third space and I'm still figuring out
-                what that means.
+                Welcome to my third space. This is where I share my work, my thoughts, and my life.
               </p>
             </div>
           </div>
@@ -723,7 +868,7 @@ function ThirdSpace() {
       </Reveal>
 
       {/* ── Instagram ── */}
-      <Reveal>
+      <Reveal className="mb-5">
         <div className="bg-white rounded-2xl p-4 sm:p-6 border border-violet-100 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-violet-800 text-sm sm:text-base">📸 Instagram</h3>
@@ -765,6 +910,24 @@ function ThirdSpace() {
               ))}
             </div>
           )}
+        </div>
+      </Reveal>
+
+      {/* ── Twitter ── */}
+      <Reveal>
+        <div className="bg-white rounded-2xl p-4 sm:p-6 border border-violet-100 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-violet-800 text-sm sm:text-base">𝕏 Twitter</h3>
+            <a
+              href="https://x.com/ericaachenn"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-violet-400 text-xs hover:text-violet-600 transition-colors"
+            >
+              @ericaachenn →
+            </a>
+          </div>
+          <TwitterCarousel />
         </div>
       </Reveal>
     </div>

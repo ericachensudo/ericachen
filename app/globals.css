@@ -23,3 +23,11 @@
 .tt-track:hover {
   animation-play-state: paused;
 }
+
+/* Twitter marquee carousel */
+.tw-track {
+  animation: tt-marquee 90s linear infinite;
+}
+.tw-track:hover {
+  animation-play-state: paused;
+}
