@@ -31,3 +31,36 @@
 .tw-track:hover {
   animation-play-state: paused;
 }
+
+/* Airplane cursor for the first space */
+.cursor-airplane,
+.cursor-airplane * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Ctext x='2' y='21' font-size='20'%3E%E2%9C%88%EF%B8%8F%3C/text%3E%3C/svg%3E") 4 4, auto;
+}
+
+/* Book cursor for the second space */
+.cursor-book,
+.cursor-book * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Ctext x='2' y='21' font-size='20'%3E%F0%9F%93%96%3C/text%3E%3C/svg%3E") 4 4, auto;
+}
+
+/* Film camera cursor for the third space */
+.cursor-camera,
+.cursor-camera * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Ctext x='2' y='21' font-size='20'%3E%F0%9F%8E%A5%3C/text%3E%3C/svg%3E") 4 4, auto;
+}
+
+/* Visually crop the Google My Maps top banner inside cross-origin iframes */
+.mymaps-crop-shell {
+  --mymaps-banner-crop: clamp(78px, 9vw, 96px);
+  position: relative;
+  overflow: hidden;
+}
+
+.mymaps-crop-frame {
+  display: block;
+  width: 100%;
+  border: 0;
+  height: calc(100% + var(--mymaps-banner-crop));
+  transform: translateY(calc(-1 * var(--mymaps-banner-crop)));
+}

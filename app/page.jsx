@@ -46,6 +46,27 @@ function HeroReveal({ children, className = '' }) {
 // Shared container
 const container = 'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10';
 
+function usePrefersDarkMode() {
+  const [prefersDark, setPrefersDark] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const updatePreference = () => setPrefersDark(mediaQuery.matches);
+
+    updatePreference();
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', updatePreference);
+      return () => mediaQuery.removeEventListener('change', updatePreference);
+    }
+
+    mediaQuery.addListener(updatePreference);
+    return () => mediaQuery.removeListener(updatePreference);
+  }, []);
+
+  return prefersDark;
+}
+
 // ─── PLACES I'VE LIVED ───────────────────────────────────────────────────────
 const LIVED_PLACES = [
   { id: 'nyc', emoji: '🗽', name: 'New York', mid: '1dbvFRxSDqDevDRlGx3rxi40wL7dvA84' },
@@ -58,21 +79,7 @@ function HomeMaps() {
   const tab = LIVED_PLACES.find((t) => t.id === active);
 
   return (
-    <div className="bg-white rounded-2xl border border-rose-100 shadow-sm overflow-hidden">
-      <div className="px-4 sm:px-6 pt-5 pb-3 flex items-center justify-between">
-        <div>
-          <h3 className="font-semibold text-rose-800 text-sm sm:text-base">Places I&apos;ve lived 🏡</h3>
-          <p className="text-rose-400 text-xs mt-0.5">Cities that shaped me</p>
-        </div>
-        <a
-          href={`https://www.google.com/maps/d/viewer?mid=${tab.mid}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-rose-400 text-xs hover:text-rose-600 transition-colors"
-        >
-          Open →
-        </a>
-      </div>
+    <div className="rounded-2xl overflow-hidden">
 
       {/* City selector pills */}
       <div className="px-4 sm:px-6 pb-3 flex gap-2 flex-wrap">
@@ -83,7 +90,7 @@ function HomeMaps() {
             className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
               active === t.id
                 ? 'bg-rose-500 text-white'
-                : 'bg-rose-50 text-rose-500 hover:bg-rose-100'
+                : 'bg-rose-50 text-rose-500 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-200 dark:hover:bg-rose-900/70'
             }`}
           >
             {t.emoji} {t.name}
@@ -94,20 +101,24 @@ function HomeMaps() {
       {/* Map */}
       <div className="px-4 sm:px-6 pb-5">
         <AnimatePresence mode="wait">
-          <motion.iframe
+          <motion.div
             key={tab.mid}
-            src={`https://www.google.com/maps/d/embed?mid=${tab.mid}&ehbc=2E312F`}
-            className="w-full rounded-xl border border-rose-100"
+            className="mymaps-crop-shell w-full rounded-xl"
             style={{ height: 'clamp(280px, 40vw, 400px)' }}
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title={tab.name}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.35, ease: EASE }}
-          />
+          >
+            <iframe
+              src={`https://www.google.com/maps/d/embed?mid=${tab.mid}&ehbc=2E312F`}
+              className="mymaps-crop-frame"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title={tab.name}
+            />
+          </motion.div>
         </AnimatePresence>
       </div>
     </div>
@@ -145,10 +156,10 @@ function PlacesMap() {
     <motion.div
       animate={{ height: totalHeight }}
       transition={{ duration: 0.45, ease: EASE }}
-      className="bg-white rounded-2xl border border-rose-100 shadow-sm overflow-hidden relative"
+      className="bg-white dark:bg-stone-900 rounded-2xl border border-rose-100 dark:border-rose-950 shadow-sm dark:shadow-black/20 overflow-hidden relative"
     >
       {/* Vertical timeline line */}
-      <div className="absolute left-16 sm:left-20 top-0 bottom-0 w-0.5 bg-rose-100" />
+      <div className="absolute left-16 sm:left-20 top-0 bottom-0 w-0.5 bg-rose-100 dark:bg-rose-950" />
 
       <div className="py-4">
         {MAP_TABS.map((t, i) => {
@@ -161,15 +172,15 @@ function PlacesMap() {
               {/* Row */}
               <button
                 onClick={() => setExpanded(isExpanded ? null : t.id)}
-                className="relative w-full flex items-center gap-3 px-4 sm:px-6 py-3 hover:bg-rose-50/50 transition-colors text-left"
+                className="relative w-full flex items-center gap-3 px-4 sm:px-6 py-3 hover:bg-rose-50/50 dark:hover:bg-rose-950/30 transition-colors text-left"
               >
                 {/* Year label on the left — only shown once per year */}
-                <span className="w-8 sm:w-10 flex-shrink-0 text-xs font-semibold text-rose-300 text-right tabular-nums">
+                <span className="w-8 sm:w-10 flex-shrink-0 text-xs font-semibold text-rose-300 dark:text-rose-700 text-right tabular-nums">
                   {showYear ? t.year : ''}
                 </span>
 
                 {/* Pin dot on the line */}
-                <div className="relative z-10 flex-shrink-0 w-5 h-5 rounded-full border-2 border-rose-300 bg-white flex items-center justify-center">
+                <div className="relative z-10 flex-shrink-0 w-5 h-5 rounded-full border-2 border-rose-300 dark:border-rose-700 bg-white dark:bg-stone-900 flex items-center justify-center">
                   <motion.div
                     animate={{
                       scale: isExpanded ? 1 : 0,
@@ -185,7 +196,7 @@ function PlacesMap() {
 
                 {/* Name */}
                 <span className={`text-sm font-medium transition-colors ${
-                  isExpanded ? 'text-rose-700' : 'text-rose-500'
+                  isExpanded ? 'text-rose-700 dark:text-rose-200' : 'text-rose-500 dark:text-rose-300'
                 }`}>
                   {t.name}
                 </span>
@@ -197,14 +208,14 @@ function PlacesMap() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="text-rose-300 text-xs hover:text-rose-500 transition-colors hidden sm:inline"
+                    className="text-rose-300 dark:text-rose-600 text-xs hover:text-rose-500 dark:hover:text-rose-300 transition-colors hidden sm:inline"
                   >
                     Open →
                   </a>
                   <motion.svg
                     animate={{ rotate: isExpanded ? 180 : 0 }}
                     transition={{ duration: 0.25 }}
-                    className="w-4 h-4 text-rose-300"
+                    className="w-4 h-4 text-rose-300 dark:text-rose-600"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -225,14 +236,16 @@ function PlacesMap() {
                     transition={{ duration: 0.4, ease: EASE }}
                     className="overflow-hidden px-4 sm:px-6 pl-20 sm:pl-24"
                   >
-                    <iframe
-                      src={`https://www.google.com/maps/d/embed?mid=${t.mid}&ehbc=2E312F`}
-                      className="w-full h-full rounded-xl border border-rose-100"
-                      allowFullScreen
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      title={t.name}
-                    />
+                    <div className="mymaps-crop-shell w-full h-full rounded-xl">
+                      <iframe
+                        src={`https://www.google.com/maps/d/embed?mid=${t.mid}&ehbc=2E312F`}
+                        className="mymaps-crop-frame"
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title={t.name}
+                      />
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -251,76 +264,28 @@ function FirstSpace() {
     <div>
       {/* Hero */}
       <HeroReveal className="mb-5">
-        <div className="bg-rose-50 rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-rose-100">
+        <div className="bg-rose-50 dark:bg-rose-950/40 rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-rose-100 dark:border-rose-900">
           <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-rose-200 flex items-center justify-center text-3xl sm:text-4xl flex-shrink-0">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-rose-200 dark:bg-rose-900 flex items-center justify-center text-3xl sm:text-4xl flex-shrink-0">
               🌸
             </div>
             <div>
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-rose-900 mb-2">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-rose-900 dark:text-rose-100 mb-2">
                 Hi, I'm Erica 👋
               </h2>
-              <p className="text-rose-700 leading-relaxed text-sm sm:text-base">
+              <p className="text-rose-700 dark:text-rose-200/90 leading-relaxed text-sm sm:text-base">
                 Welcome to my little corner of the internet. I'm playing around
                 with the idea of first space, second space, and third space online
                 and figuring out what it means to share different parts of my life.
+                I grew up in Queens and have lived in New York, Seattle, and San
+                Francisco, and right now I am usually chasing a new restaurant,
+                growing my Polaroid collection, planning solo trips, or hosting
+                Mahjong and Catan nights.
               </p>
             </div>
           </div>
         </div>
       </HeroReveal>
-
-      {/* Info cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-5">
-        {[
-          {
-            title: 'Things I love ❤️',
-            body: (
-              <ul className="space-y-2 text-sm text-rose-700">
-                {[
-                  '🍽️ Never eating at the same restaurant twice',
-                  '📷 Polaroids & candid film photography',
-                  '✈️ Solo travel & city-hopping',
-                  '🀄 Hosting Mahjong & Catan nights',
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            ),
-          },
-          {
-            title: 'Home base 🏡',
-            body: (
-              <>
-                <p className="text-rose-500 text-xs mb-2">New York · Seattle · San Francisco</p>
-                <p className="text-rose-700 text-sm leading-relaxed">
-                  I've spent at least a year in Seattle, San Francisco, and New York
-                  and I've taken a piece of each city with me everywhere I go, but it all started in Queens, New York.
-                </p>
-              </>
-            ),
-          },
-          {
-            title: 'Right now 🌱',
-            body: (
-              <p className="text-rose-700 text-sm leading-relaxed">
-                Growing my Polaroid collection, planning my next solo trip,
-                and always scouting the next restaurant nobody's heard of yet.
-              </p>
-            ),
-            xlOnly: true,
-          },
-        ].map((card, i) => (
-          <Reveal key={i} delay={i * 0.08} className={card.xlOnly ? 'hidden xl:block' : ''}>
-            <div className="h-full bg-white rounded-2xl p-4 sm:p-6 border border-rose-100 shadow-sm">
-              <h3 className="font-semibold text-rose-800 mb-3 text-sm sm:text-base">{card.title}</h3>
-              {card.body}
-            </div>
-          </Reveal>
-        ))}
-      </div>
 
       {/* ── Places I've lived ── */}
       <Reveal className="mb-5">
@@ -341,7 +306,7 @@ function FirstSpace() {
 // import from your CMS/database once it's set up.
 const EXPERIENCE = [
   {
-    title: 'Technical Program Manager II',
+    title: 'Technical Program Manager',
     company: 'Microsoft',
     location: 'Redmond, WA · Azure Core – Compute Control Plane',
     period: 'Nov 2024 – Present',
@@ -406,7 +371,7 @@ function CursorPopup({ item, pos }) {
       exit={{ opacity: 0, scale: 0.85, y: 8 }}
       transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
       style={{ left: x, top: y, pointerEvents: 'none', position: 'fixed', zIndex: 9999 }}
-      className="w-36 rounded-2xl overflow-hidden shadow-xl border border-white/60"
+      className="w-36 rounded-2xl overflow-hidden shadow-xl border border-white/60 dark:border-stone-700"
     >
       {item.photo ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -427,9 +392,9 @@ function CursorPopup({ item, pos }) {
           </span>
         </div>
       )}
-      <div className="bg-white px-3 py-2">
-        <p className="text-amber-900 text-xs font-medium truncate">{item.title}</p>
-        <p className="text-amber-400 text-xs truncate">{item.company}</p>
+      <div className="bg-white dark:bg-stone-900 px-3 py-2">
+        <p className="text-amber-900 dark:text-amber-100 text-xs font-medium truncate">{item.title}</p>
+        <p className="text-amber-400 dark:text-amber-300 text-xs truncate">{item.company}</p>
       </div>
     </motion.div>
   );
@@ -459,21 +424,21 @@ function ResumeRow({ item, index, onEnter, onMove, onLeave }) {
             onMouseEnter={(e) => onEnter(e, item)}
             onMouseMove={(e) => onMove(e)}
             onMouseLeave={onLeave}
-            className="font-semibold text-amber-900 text-base sm:text-lg leading-tight hover:text-amber-700 transition-colors cursor-default"
+            className="font-semibold text-amber-900 dark:text-amber-100 text-base sm:text-lg leading-tight hover:text-amber-700 dark:hover:text-amber-300 transition-colors cursor-default"
           >
             {item.title ?? item.degree}
           </h3>
-          <span className="text-amber-400 text-xs hidden sm:inline">·</span>
-          <span className="text-amber-600 text-sm">{item.company ?? item.school}</span>
+          <span className="text-amber-400 dark:text-amber-500 text-xs hidden sm:inline">·</span>
+          <span className="text-amber-600 dark:text-amber-300 text-sm">{item.company ?? item.school}</span>
           {(item.location) && (
             <>
-              <span className="text-amber-300 text-xs hidden sm:inline">·</span>
-              <span className="text-amber-400 text-xs">{item.location}</span>
+              <span className="text-amber-300 dark:text-amber-700 text-xs hidden sm:inline">·</span>
+              <span className="text-amber-400 dark:text-amber-500 text-xs">{item.location}</span>
             </>
           )}
         </div>
         {(item.desc ?? item.note) && (
-          <p className="text-amber-700/80 text-sm leading-relaxed">
+          <p className="text-amber-700/80 dark:text-amber-200/80 text-sm leading-relaxed">
             {item.desc ?? item.note}
           </p>
         )}
@@ -507,16 +472,16 @@ function SecondSpace() {
       <div>
         {/* Hero */}
         <HeroReveal className="mb-8">
-          <div className="bg-amber-50 rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-amber-100">
+          <div className="bg-amber-50 dark:bg-amber-950/35 rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-amber-100 dark:border-amber-900">
             <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-200 flex items-center justify-center text-3xl sm:text-4xl flex-shrink-0">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-200 dark:bg-amber-900 flex items-center justify-center text-3xl sm:text-4xl flex-shrink-0">
                 ✨
               </div>
               <div>
-                <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-amber-900 mb-2">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-amber-900 dark:text-amber-100 mb-2">
                   What I do
                 </h2>
-                <p className="text-amber-700 leading-relaxed text-sm sm:text-base">
+                <p className="text-amber-700 dark:text-amber-200/90 leading-relaxed text-sm sm:text-base">
                   TPM at Microsoft Azure, where I keep cloud infrastructure
                   reliable for 135M weekly users. Built on a software engineering
                   foundation at Salesforce and Capital One, and a
@@ -530,13 +495,13 @@ function SecondSpace() {
 
         {/* Experience section */}
         <Reveal>
-          <div className="bg-white rounded-2xl border border-amber-100 shadow-sm overflow-hidden mb-4">
-            <div className="px-5 sm:px-8 pt-6 pb-2 border-b border-amber-50">
-              <p className="text-xs font-semibold uppercase tracking-widest text-amber-400">
+          <div className="bg-white dark:bg-stone-900 rounded-2xl border border-amber-100 dark:border-amber-950 shadow-sm dark:shadow-black/20 overflow-hidden mb-4">
+            <div className="px-5 sm:px-8 pt-6 pb-2 border-b border-amber-50 dark:border-amber-950">
+              <p className="text-xs font-semibold uppercase tracking-widest text-amber-400 dark:text-amber-500">
                 Experience
               </p>
             </div>
-            <div className="px-5 sm:px-8 divide-y divide-amber-50">
+            <div className="px-5 sm:px-8 divide-y divide-amber-50 dark:divide-amber-950">
               {EXPERIENCE.map((job, i) => (
                 <ResumeRow
                   key={i}
@@ -553,13 +518,13 @@ function SecondSpace() {
 
         {/* Education section */}
         <Reveal delay={0.1}>
-          <div className="bg-white rounded-2xl border border-amber-100 shadow-sm overflow-hidden">
-            <div className="px-5 sm:px-8 pt-6 pb-2 border-b border-amber-50">
-              <p className="text-xs font-semibold uppercase tracking-widest text-amber-400">
+          <div className="bg-white dark:bg-stone-900 rounded-2xl border border-amber-100 dark:border-amber-950 shadow-sm dark:shadow-black/20 overflow-hidden">
+            <div className="px-5 sm:px-8 pt-6 pb-2 border-b border-amber-50 dark:border-amber-950">
+              <p className="text-xs font-semibold uppercase tracking-widest text-amber-400 dark:text-amber-500">
                 Education
               </p>
             </div>
-            <div className="px-5 sm:px-8 divide-y divide-amber-50">
+            <div className="px-5 sm:px-8 divide-y divide-amber-50 dark:divide-amber-950">
               {EDUCATION.map((edu, i) => (
                 <ResumeRow
                   key={i}
@@ -666,6 +631,7 @@ const TWEET_EMBED_HEIGHT = 520;
 // Duplicates the list so the loop is seamless.
 // Hover pauses the scroll so visitors can interact with a post.
 function TwitterCarousel({ tweetIds = TWEET_IDS }) {
+  const prefersDark = usePrefersDarkMode();
   const track = [...tweetIds, ...tweetIds];
 
   return (
@@ -686,12 +652,12 @@ function TwitterCarousel({ tweetIds = TWEET_IDS }) {
             href={`https://x.com/ericaachenn/status/${id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-shrink-0 rounded-2xl overflow-hidden border border-violet-100 shadow-md block"
+            className="flex-shrink-0 rounded-2xl overflow-hidden border border-violet-100 dark:border-violet-950 shadow-md dark:shadow-black/20 block"
             style={{ width: TWEET_EMBED_WIDTH }}
             onClick={(e) => e.preventDefault()}
           >
             <iframe
-              src={`https://platform.twitter.com/embed/Tweet.html?id=${id}&theme=light&dnt=true`}
+              src={`https://platform.twitter.com/embed/Tweet.html?id=${id}&theme=${prefersDark ? 'dark' : 'light'}&dnt=true`}
               style={{
                 width: TWEET_EMBED_WIDTH,
                 height: TWEET_EMBED_HEIGHT,
@@ -711,7 +677,7 @@ function TwitterCarousel({ tweetIds = TWEET_IDS }) {
 // Skeleton shimmer shown while fetching
 function Skeleton({ className = '' }) {
   return (
-    <div className={`animate-pulse bg-violet-100 rounded-xl ${className}`} />
+    <div className={`animate-pulse bg-violet-100 dark:bg-violet-950 rounded-xl ${className}`} />
   );
 }
 
@@ -728,7 +694,7 @@ function IgTile({ item, index }) {
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.45, delay: index * 0.05, ease: EASE }}
-      className="relative group aspect-square rounded-xl overflow-hidden bg-violet-50 block"
+      className="relative group aspect-square rounded-xl overflow-hidden bg-violet-50 dark:bg-violet-950/60 block"
     >
       {src && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -763,7 +729,7 @@ function TtTile({ video, index }) {
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.45, delay: index * 0.05, ease: EASE }}
-      className="relative group aspect-[9/16] rounded-xl overflow-hidden bg-violet-50 block"
+      className="relative group aspect-[9/16] rounded-xl overflow-hidden bg-violet-50 dark:bg-violet-950/60 block"
     >
       {video.cover_image_url && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -794,14 +760,14 @@ function TtTile({ video, index }) {
 function NotConnected({ platform, connectPath }) {
   return (
     <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
-      <div className="w-14 h-14 rounded-2xl bg-violet-100 flex items-center justify-center text-3xl mb-4">
+      <div className="w-14 h-14 rounded-2xl bg-violet-100 dark:bg-violet-950 flex items-center justify-center text-3xl mb-4">
         {platform === 'tiktok' ? '🎵' : '📸'}
       </div>
-      <p className="text-violet-800 font-medium mb-1">
+      <p className="text-violet-800 dark:text-violet-100 font-medium mb-1">
         {platform === 'tiktok' ? 'TikTok' : 'Instagram'} not connected yet
       </p>
-      <p className="text-violet-400 text-sm mb-4 max-w-xs">
-        Follow the steps in <code className="bg-violet-50 px-1 rounded">SETUP.md</code> to add your API tokens, then{' '}
+      <p className="text-violet-400 dark:text-violet-300 text-sm mb-4 max-w-xs">
+        Follow the steps in <code className="bg-violet-50 dark:bg-violet-950 px-1 rounded">SETUP.md</code> to add your API tokens, then{' '}
         {platform === 'tiktok' && (
           <a href={connectPath} className="underline">visit /api/tiktok/connect</a>
         )}
@@ -832,18 +798,15 @@ function ThirdSpace() {
     <div>
       {/* Hero */}
       <HeroReveal className="mb-5">
-        <div className="bg-violet-50 rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-violet-100">
+        <div className="bg-violet-50 dark:bg-violet-950/35 rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-violet-100 dark:border-violet-900">
           <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-violet-200 flex items-center justify-center text-3xl sm:text-4xl flex-shrink-0">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-violet-200 dark:bg-violet-900 flex items-center justify-center text-3xl sm:text-4xl flex-shrink-0">
               🎬
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-violet-900 mb-2">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-violet-900 dark:text-violet-100 mb-2">
                 somewhere on the internet ✶
               </h2>
-              <p className="text-violet-700 leading-relaxed text-sm sm:text-base">
-                Welcome to my third space. This is where I share my work, my thoughts, and my life.
-              </p>
             </div>
           </div>
         </div>
@@ -851,14 +814,14 @@ function ThirdSpace() {
 
       {/* ── TikTok ── */}
       <Reveal className="mb-5">
-        <div className="bg-white rounded-2xl p-4 sm:p-6 border border-violet-100 shadow-sm">
+        <div className="bg-white dark:bg-stone-900 rounded-2xl p-4 sm:p-6 border border-violet-100 dark:border-violet-950 shadow-sm dark:shadow-black/20">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-violet-800 text-sm sm:text-base">🎵 TikTok</h3>
+            <h3 className="font-semibold text-violet-800 dark:text-violet-100 text-sm sm:text-base">🎵 TikTok</h3>
             <a
               href="https://tiktok.com/@airwrecah"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-violet-400 text-xs hover:text-violet-600 transition-colors"
+              className="text-violet-400 dark:text-violet-300 text-xs hover:text-violet-600 dark:hover:text-violet-100 transition-colors"
             >
               @airwrecah →
             </a>
@@ -869,14 +832,14 @@ function ThirdSpace() {
 
       {/* ── Instagram ── */}
       <Reveal className="mb-5">
-        <div className="bg-white rounded-2xl p-4 sm:p-6 border border-violet-100 shadow-sm">
+        <div className="bg-white dark:bg-stone-900 rounded-2xl p-4 sm:p-6 border border-violet-100 dark:border-violet-950 shadow-sm dark:shadow-black/20">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-violet-800 text-sm sm:text-base">📸 Instagram</h3>
+            <h3 className="font-semibold text-violet-800 dark:text-violet-100 text-sm sm:text-base">📸 Instagram</h3>
             <a
               href="https://instagram.com/airwrecah"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-violet-400 text-xs hover:text-violet-600 transition-colors"
+              className="text-violet-400 dark:text-violet-300 text-xs hover:text-violet-600 dark:hover:text-violet-100 transition-colors"
             >
               @airwrecah →
             </a>
@@ -899,8 +862,8 @@ function ThirdSpace() {
                 📸
               </div>
               <div className="text-center">
-                <p className="text-violet-800 font-medium text-sm">@airwrecah</p>
-                <p className="text-violet-400 text-xs mt-0.5">View on Instagram →</p>
+                <p className="text-violet-800 dark:text-violet-100 font-medium text-sm">@airwrecah</p>
+                <p className="text-violet-400 dark:text-violet-300 text-xs mt-0.5">View on Instagram →</p>
               </div>
             </a>
           ) : (
@@ -915,14 +878,14 @@ function ThirdSpace() {
 
       {/* ── Twitter ── */}
       <Reveal>
-        <div className="bg-white rounded-2xl p-4 sm:p-6 border border-violet-100 shadow-sm">
+        <div className="bg-white dark:bg-stone-900 rounded-2xl p-4 sm:p-6 border border-violet-100 dark:border-violet-950 shadow-sm dark:shadow-black/20">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-violet-800 text-sm sm:text-base">𝕏 Twitter</h3>
+            <h3 className="font-semibold text-violet-800 dark:text-violet-100 text-sm sm:text-base">𝕏 Twitter</h3>
             <a
               href="https://x.com/ericaachenn"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-violet-400 text-xs hover:text-violet-600 transition-colors"
+              className="text-violet-400 dark:text-violet-300 text-xs hover:text-violet-600 dark:hover:text-violet-100 transition-colors"
             >
               @ericaachenn →
             </a>
@@ -943,10 +906,10 @@ const TABS = [
     sub: 'home & heart',
     tagline: "the space where i'm most myself",
     activeBg: 'bg-rose-500',
-    subBg: 'bg-rose-50',
-    subBorder: 'border-rose-100',
-    subText: 'text-rose-400',
-    subTagline: 'text-rose-300',
+    subBg: 'bg-rose-50 dark:bg-rose-950/30',
+    subBorder: 'border-rose-100 dark:border-rose-950',
+    subText: 'text-rose-400 dark:text-rose-300',
+    subTagline: 'text-rose-300 dark:text-rose-400',
   },
   {
     id: 'second',
@@ -955,10 +918,10 @@ const TABS = [
     sub: 'work & study',
     tagline: "what i've learned and where i've been",
     activeBg: 'bg-amber-500',
-    subBg: 'bg-amber-50',
-    subBorder: 'border-amber-100',
-    subText: 'text-amber-400',
-    subTagline: 'text-amber-300',
+    subBg: 'bg-amber-50 dark:bg-amber-950/30',
+    subBorder: 'border-amber-100 dark:border-amber-950',
+    subText: 'text-amber-400 dark:text-amber-300',
+    subTagline: 'text-amber-300 dark:text-amber-400',
   },
   {
     id: 'third',
@@ -967,10 +930,10 @@ const TABS = [
     sub: 'online & out there',
     tagline: 'where i show up for a wider world',
     activeBg: 'bg-violet-500',
-    subBg: 'bg-violet-50',
-    subBorder: 'border-violet-100',
-    subText: 'text-violet-400',
-    subTagline: 'text-violet-300',
+    subBg: 'bg-violet-50 dark:bg-violet-950/30',
+    subBorder: 'border-violet-100 dark:border-violet-950',
+    subText: 'text-violet-400 dark:text-violet-300',
+    subTagline: 'text-violet-300 dark:text-violet-400',
   },
 ];
 
@@ -978,18 +941,23 @@ const TABS = [
 export default function Home() {
   const [active, setActive] = useState('first');
   const current = TABS.find((t) => t.id === active);
+  const cursorClass = active === 'first'
+    ? 'cursor-airplane'
+    : active === 'second'
+      ? 'cursor-book'
+      : 'cursor-camera';
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className={`min-h-screen bg-stone-50 dark:bg-stone-950 ${cursorClass}`}>
 
       {/* ── Sticky header ── */}
-      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-stone-100">
+      <header className="sticky top-0 z-10 bg-white/80 dark:bg-stone-950/80 backdrop-blur-md border-b border-stone-100 dark:border-stone-800">
         <div className={`${container} py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4`}>
           <div className="flex-shrink-0">
-            <h1 className="font-semibold text-stone-800 text-base sm:text-lg leading-tight">
+            <h1 className="font-semibold text-stone-800 dark:text-stone-100 text-base sm:text-lg leading-tight">
               Erica Chen
             </h1>
-            <p className="text-stone-400 text-xs">three spaces · one person</p>
+            <p className="text-stone-400 dark:text-stone-500 text-xs">three spaces · one person</p>
           </div>
 
           <nav className="flex gap-1.5 sm:ml-auto overflow-x-auto pb-0.5 sm:pb-0 no-scrollbar">
@@ -1000,7 +968,7 @@ export default function Home() {
                 className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                   active === tab.id
                     ? `${tab.activeBg} text-white`
-                    : 'text-stone-500 hover:bg-stone-100'
+                    : 'text-stone-500 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'
                 }`}
               >
                 {tab.emoji}
@@ -1031,8 +999,8 @@ export default function Home() {
       </main>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-stone-100">
-        <div className={`${container} py-6 text-center text-stone-400 text-xs`}>
+      <footer className="border-t border-stone-100 dark:border-stone-800">
+        <div className={`${container} py-6 text-center text-stone-400 dark:text-stone-500 text-xs`}>
           made with 🤍 · erica chen · {new Date().getFullYear()}
         </div>
       </footer>
