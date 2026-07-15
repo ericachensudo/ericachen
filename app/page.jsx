@@ -557,6 +557,9 @@ const FEATURED_VIDEOS = [
   '7617511729555098893',
 ];
 
+const TIKTOK_EMBED_WIDTH = 325;
+const TIKTOK_EMBED_HEIGHT = 575;
+
 // Infinite scrolling marquee of TikTok embeds.
 // Duplicates the list so the loop is seamless.
 // Hover pauses the scroll so visitors can interact with a video.
@@ -572,21 +575,26 @@ function TikTokCarousel({ videoIds = FEATURED_VIDEOS }) {
       transition={{ duration: 0.55, ease: EASE }}
       className="overflow-hidden w-full"
     >
-      <div className="tt-track flex gap-4" style={{ width: `calc(${track.length} * (220px + 16px))` }}>
+      <div
+        className="tt-track flex gap-4"
+        style={{ width: `calc(${track.length} * (${TIKTOK_EMBED_WIDTH}px + 16px))` }}
+      >
         {track.map((id, i) => (
           <a
             key={`${id}-${i}`}
             href={`https://www.tiktok.com/@airwrecah/video/${id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-shrink-0 rounded-2xl overflow-hidden border border-violet-100 shadow-md block"
-            style={{ width: 220 }}
+            className="flex-shrink-0 rounded-2xl overflow-hidden border border-violet-100 dark:border-violet-950 shadow-md dark:shadow-black/20 block"
+            style={{ width: TIKTOK_EMBED_WIDTH }}
             onClick={(e) => e.preventDefault()} // let iframe handle interaction
           >
             <iframe
               src={`https://www.tiktok.com/embed/v2/${id}`}
-              style={{ width: 220, height: 390, display: 'block' }}
+              style={{ width: TIKTOK_EMBED_WIDTH, height: TIKTOK_EMBED_HEIGHT, display: 'block', border: 'none' }}
               allow="encrypted-media; picture-in-picture"
+              scrolling="no"
+              loading="lazy"
               allowFullScreen
               frameBorder="0"
               title={`TikTok ${i % videoIds.length + 1}`}
@@ -624,8 +632,8 @@ const TWEET_IDS = [
   '1896445092959039656',
 ];
 
-const TWEET_EMBED_WIDTH = 350;
-const TWEET_EMBED_HEIGHT = 520;
+const TWEET_EMBED_WIDTH = 390;
+const TWEET_EMBED_HEIGHT = 700;
 
 // Infinite scrolling marquee of tweet embeds.
 // Duplicates the list so the loop is seamless.
@@ -657,13 +665,15 @@ function TwitterCarousel({ tweetIds = TWEET_IDS }) {
             onClick={(e) => e.preventDefault()}
           >
             <iframe
-              src={`https://platform.twitter.com/embed/Tweet.html?id=${id}&theme=${prefersDark ? 'dark' : 'light'}&dnt=true`}
+              src={`https://platform.twitter.com/embed/Tweet.html?id=${id}&theme=${prefersDark ? 'dark' : 'light'}&dnt=true&conversation=none&cards=hidden&align=center`}
               style={{
                 width: TWEET_EMBED_WIDTH,
                 height: TWEET_EMBED_HEIGHT,
                 display: 'block',
                 border: 'none',
               }}
+              scrolling="no"
+              loading="lazy"
               allowFullScreen
               title={`Tweet ${i % tweetIds.length + 1}`}
             />
@@ -671,50 +681,6 @@ function TwitterCarousel({ tweetIds = TWEET_IDS }) {
         ))}
       </div>
     </motion.div>
-  );
-}
-
-// Skeleton shimmer shown while fetching
-function Skeleton({ className = '' }) {
-  return (
-    <div className={`animate-pulse bg-violet-100 dark:bg-violet-950 rounded-xl ${className}`} />
-  );
-}
-
-// Single Instagram tile
-function IgTile({ item, index }) {
-  const isVideo = item.media_type === 'VIDEO';
-  const src = isVideo ? item.thumbnail_url : item.media_url;
-  return (
-    <motion.a
-      href={item.permalink}
-      target="_blank"
-      rel="noopener noreferrer"
-      initial={{ opacity: 0, scale: 0.93 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.45, delay: index * 0.05, ease: EASE }}
-      className="relative group aspect-square rounded-xl overflow-hidden bg-violet-50 dark:bg-violet-950/60 block"
-    >
-      {src && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={src}
-          alt={item.caption ?? 'Instagram post'}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-      )}
-      {isVideo && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
-            <svg className="w-4 h-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </div>
-        </div>
-      )}
-      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-    </motion.a>
   );
 }
 
@@ -779,21 +745,6 @@ function NotConnected({ platform, connectPath }) {
 
 // ─── THIRD SPACE ─── online & out there ────────────────────────────────────
 function ThirdSpace() {
-  const [igData, setIgData] = useState(null);
-  const [igError, setIgError] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('/api/instagram')
-      .then((r) => r.json())
-      .catch(() => ({ error: 'fetch failed' }))
-      .then((ig) => {
-        if (ig.error) setIgError(ig.error);
-        else setIgData(ig.media ?? []);
-        setLoading(false);
-      });
-  }, []);
-
   return (
     <div>
       {/* Hero */}
@@ -827,52 +778,6 @@ function ThirdSpace() {
             </a>
           </div>
           <TikTokCarousel />
-        </div>
-      </Reveal>
-
-      {/* ── Instagram ── */}
-      <Reveal className="mb-5">
-        <div className="bg-white dark:bg-stone-900 rounded-2xl p-4 sm:p-6 border border-violet-100 dark:border-violet-950 shadow-sm dark:shadow-black/20">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-violet-800 dark:text-violet-100 text-sm sm:text-base">📸 Instagram</h3>
-            <a
-              href="https://instagram.com/airwrecah"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-violet-400 dark:text-violet-300 text-xs hover:text-violet-600 dark:hover:text-violet-100 transition-colors"
-            >
-              @airwrecah →
-            </a>
-          </div>
-
-          {loading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <Skeleton key={i} className="aspect-square" />
-              ))}
-            </div>
-          ) : igError ? (
-            <a
-              href="https://instagram.com/airwrecah"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-col items-center justify-center py-12 gap-4 group"
-            >
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-400 via-pink-400 to-amber-400 flex items-center justify-center text-white text-2xl shadow-md group-hover:scale-105 transition-transform duration-300">
-                📸
-              </div>
-              <div className="text-center">
-                <p className="text-violet-800 dark:text-violet-100 font-medium text-sm">@airwrecah</p>
-                <p className="text-violet-400 dark:text-violet-300 text-xs mt-0.5">View on Instagram →</p>
-              </div>
-            </a>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {igData.map((item, i) => (
-                <IgTile key={item.id} item={item} index={i} />
-              ))}
-            </div>
-          )}
         </div>
       </Reveal>
 
