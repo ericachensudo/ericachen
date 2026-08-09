@@ -2,6 +2,368 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --ink: #242424;
+  --graphite: #5b5b5b;
+  --paper: #f7f7f5;
+  --navy: #2e4a73;
+  --pink-light: #f8b8d4;
+  --pink-bright: #fb3ca8;
+  --pink-hot: #f643a8;
+  --pink-core: #ef329d;
+  --pink-deep: #ca3e90;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  padding: 10px 14px;
+  color: #ffffff;
+  background: var(--pink-deep);
+  border-radius: 4px;
+  transform: translateY(-160%);
+  transition: transform 160ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--navy);
+  outline-offset: 3px;
+}
+
+.fridge-scene {
+  position: relative;
+  height: 150svh;
+  background: transparent;
+}
+
+.fridge-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  perspective: 1800px;
+  perspective-origin: left center;
+  z-index: 30;
+  background: transparent;
+}
+
+.fridge-reveal {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+.site-header {
+  margin-top: -100svh;
+}
+
+.fridge-door {
+  --fridge-edge: #c7ccca;
+  position: absolute;
+  inset: 0;
+  min-height: 100svh;
+  overflow: hidden;
+  color: #292524;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.72), transparent 12%, transparent 87%, rgba(97, 103, 101, 0.12)),
+    repeating-linear-gradient(105deg, rgba(255, 255, 255, 0.16) 0 1px, transparent 1px 7px),
+    #dfe3e1;
+  border: 10px solid var(--fridge-edge);
+  box-shadow:
+    inset 0 0 50px rgba(61, 66, 64, 0.14),
+    32px 0 50px rgba(41, 37, 36, var(--door-shadow-opacity));
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+.fridge-canvas {
+  position: relative;
+  width: min(100%, 900px);
+  min-height: calc(100svh - 20px);
+  margin: 0 auto;
+}
+
+.fridge-handle {
+  position: absolute;
+  top: 12%;
+  right: clamp(15px, 4vw, 52px);
+  z-index: 2;
+  width: 18px;
+  height: 40%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #8c9290, #e7e9e8 48%, #737876);
+  box-shadow: -5px 6px 10px rgba(41, 37, 36, 0.2);
+}
+
+.fridge-polaroid {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(250px, 55vw, 390px);
+  padding: 14px 14px 22px;
+  background: #fffdf8;
+  box-shadow: 2px 8px 24px rgba(41, 37, 36, 0.22);
+  translate: -50% -50%;
+}
+
+.fridge-photo-placeholder {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  color: rgba(255, 255, 255, 0.82);
+  background:
+    linear-gradient(145deg, transparent 48%, rgba(255, 255, 255, 0.18) 49% 51%, transparent 52%),
+    #2e4a73;
+  font-family: Georgia, serif;
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: lowercase;
+}
+
+.fridge-bio {
+  padding: 18px 8px 0;
+}
+
+.fridge-bio h1 {
+  margin-bottom: 7px;
+  font-family: Georgia, serif;
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.fridge-bio p {
+  font-family: Georgia, serif;
+  font-size: clamp(11px, 1.6vw, 13px);
+  line-height: 1.45;
+}
+
+.fridge-sticker {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  box-shadow: 1px 4px 8px rgba(41, 37, 36, 0.24);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.fridge-sticker:active {
+  cursor: grabbing;
+}
+
+.fridge-sticker small {
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.fridge-sticker-nyc {
+  top: 26%;
+  left: calc(50% - 180px);
+  width: 105px;
+  height: 64px;
+  color: #f7f7f5;
+  background: #a42672;
+  border: 4px solid #fde8f2;
+  font-family: Georgia, serif;
+  font-size: 24px;
+}
+
+.fridge-sticker-postcard {
+  top: 33%;
+  left: calc(50% + 70px);
+  width: 142px;
+  height: 88px;
+  color: #2e4a73;
+  background: #f7f7f5;
+  border: 5px solid #f7f7f5;
+  outline: 2px dashed #f643a8;
+  outline-offset: -7px;
+  font-family: Georgia, serif;
+  font-size: 17px;
+}
+
+.fridge-sticker-flower {
+  top: 51%;
+  left: calc(50% - 195px);
+  width: 92px;
+  height: 92px;
+  color: #ca3e90;
+  background: #f8b8d4;
+  border-radius: 50%;
+  font-size: 50px;
+}
+
+.fridge-sticker-mahjong {
+  top: 54%;
+  left: calc(50% + 72px);
+  width: 92px;
+  height: 112px;
+  color: #ca3e90;
+  background: #f7f7f5;
+  border: 5px solid #ca3e90;
+  border-radius: 6px;
+  font-family: Georgia, serif;
+  font-size: 40px;
+}
+
+.fridge-sticker-note {
+  top: 68%;
+  left: calc(50% - 80px);
+  width: 145px;
+  height: 112px;
+  color: #242424;
+  background: #f8b8d4;
+  font-family: Georgia, serif;
+  font-size: 16px;
+}
+
+.fridge-scroll-hint {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #5b5b5b;
+  font-family: Georgia, serif;
+  font-size: 11px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.fridge-scroll-hint span:last-child {
+  font-size: 18px;
+  animation: fridge-bounce 1.8s ease-in-out infinite;
+}
+
+@keyframes fridge-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+@media (max-width: 639px) {
+  .fridge-door {
+    border-width: 6px;
+  }
+
+  .fridge-canvas {
+    min-height: calc(100svh - 12px);
+  }
+
+  .fridge-handle {
+    right: 10px;
+    width: 12px;
+  }
+
+  .fridge-sticker-nyc { left: 5%; }
+  .fridge-sticker-postcard { left: auto; right: 7%; }
+  .fridge-sticker-flower { left: 3%; }
+  .fridge-sticker-mahjong { left: auto; right: 6%; }
+}
+
+.space-section {
+  --space-from: #f7f7f5;
+  --space-color: #fff6fa;
+  --space-to: #fde8f2;
+  position: relative;
+  isolation: isolate;
+  scroll-margin-top: 74px;
+  background:
+    linear-gradient(to bottom, var(--space-from) 0, var(--space-color) 12rem, var(--space-color) calc(100% - 12rem), var(--space-to) 100%);
+}
+
+.space-section-first {
+  --space-from: #f7f7f5;
+  --space-color: #fff6fa;
+  --space-to: #fde8f2;
+}
+
+.space-section-second {
+  --space-from: #fde8f2;
+  --space-color: #fff0f7;
+  --space-to: #f8d3e4;
+}
+
+.space-section-third {
+  --space-from: #f8d3e4;
+  --space-color: #fde8f2;
+  --space-to: #f7f7f5;
+}
+
+.space-banner {
+  background: color-mix(in srgb, var(--space-color) 84%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+@media (min-width: 640px) {
+  .space-section {
+    scroll-margin-top: 63px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .fridge-scene {
+    height: 100svh;
+  }
+
+  .skip-link {
+    transition: none;
+  }
+
+  .fridge-scroll-hint span:last-child {
+    animation: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  button:focus-visible,
+  a:focus-visible {
+    outline-color: var(--pink-light);
+  }
+
+  .space-section-first {
+    --space-from: #242424;
+    --space-color: #291a22;
+    --space-to: #2a2027;
+  }
+
+  .space-section-second {
+    --space-from: #2a2027;
+    --space-color: #242424;
+    --space-to: #222936;
+  }
+
+  .space-section-third {
+    --space-from: #222936;
+    --space-color: #291a22;
+    --space-to: #242424;
+  }
+}
+
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
     display: none;
